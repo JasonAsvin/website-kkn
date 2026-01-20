@@ -113,7 +113,7 @@ const Home = () => {
                 Kepala Kelurahan Baju Bodoa
               </p>
               <p className="text-gray-700 mb-3">
-                Assalamu&apos;alaikum Warahmatullahi Wabarakatuh,
+                Assalamu'alaikum Warahmatullahi Wabarakatuh,
               </p>
               <p className="text-gray-600 leading-relaxed text-justify">
                 Selamat datang di Website Resmi Kelurahan Baju Bodoa. Website ini

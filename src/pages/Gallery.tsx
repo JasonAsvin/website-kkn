@@ -24,15 +24,13 @@ const Gallery = () => {
   ];
 
   return (
-    <section id="gallery" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            Galeri Foto
-          </h2>
-          <div className="w-24 h-1 bg-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Dokumentasi kegiatan dan potret kehidupan di Desa Makmur
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Galeri Foto</h1>
+          <p className="text-xl text-gray-600">
+            Dokumentasi kegiatan dan potret kehidupan di Kelurahan Baju Bodoa
           </p>
         </div>
 
@@ -78,7 +76,7 @@ const Gallery = () => {
           </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

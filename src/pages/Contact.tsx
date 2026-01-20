@@ -25,24 +25,23 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            Hubungi Kami
-          </h2>
-          <div className="w-24 h-1 bg-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Hubungi Kami</h1>
+          <p className="text-xl text-gray-600">
             Sampaikan pertanyaan, saran, atau aspirasi Anda kepada kami
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        {/* Content */}
+        <div className="grid md:grid-cols-2 gap-8">
           {/* Contact Information */}
-          <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Informasi Kontak
-            </h3>
+            </h2>
 
             <div className="space-y-6">
               <div className="flex items-start">
@@ -226,7 +225,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

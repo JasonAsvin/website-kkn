@@ -7,49 +7,94 @@ const ProfileKelurahan = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Profil Kelurahan</h1>
-          <p className="text-xl text-gray-600">Kelurahan Baju Bodoa</p>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Profil Kelurahan</h1>
         </div>
 
         {/* Content */}
         <div className="space-y-8">
-          {/* Nama Kelurahan */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Nama Kelurahan</h2>
-            <p className="text-lg text-gray-700">Kelurahan Baju Bodoa</p>
+          {/* Tentang Kelurahan Baju Bodoa */}
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Tentang Kelurahan Baju Bodoa</h2>
+            <div className="space-y-4 text-gray-700 leading-relaxed">
+              <p>
+                Baju Bodoa adalah nama sebuah kelurahan yang berada di wilayah Kecamatan Maros Baru, Kabupaten Maros, Provinsi Sulawesi Selatan, Indonesia dan mayoritas berpenduduk Suku Makassar.
+              </p>
+              <p>
+                Adat dan budaya di Kelurahan Baju Bodoa sangat dipengaruhi oleh tradisi turun-temurun dari Kerajaan Marusu.
+                Eksistensi kerajaan ini masih ada hingga saat ini dan bertempat di Istana Balla Lompoa Karaeng Marusu. Salah satu tradisi yang selalu dilakukan setiap tahun adalah Katto Bokko.
+                Katto Bokko merupakan upacara adat budaya tahunan Kerajaan Marusu yang melibatkan komponen masyarakat dan dilakukan sebelum melakukan panen raya.
+              </p>
+            </div>
+
+            {/* Large Placeholder Box
+            <div className="mt-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg h-64 flex items-center justify-center">
+              <div className="text-center text-white">
+                <p className="text-xl font-semibold">Image Placeholder</p>
+                <p className="text-sm opacity-80 mt-2">Gambar atau konten visual akan ditampilkan di sini</p>
+              </div>
+            </div> */}
           </div>
 
-          {/* Wilayah Administratif */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Wilayah Administratif</h2>
-            <div className="space-y-3 text-gray-700">
-              <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                <span className="font-semibold">Kecamatan:</span>
-                <span>Maros</span>
+          {/* Two Column Layout: Batas Wilayah & Data Umum */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Batas Wilayah */}
+            <div className="bg-white rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Batas Wilayah</h2>
+              <div className="space-y-1">
+                {[
+                  { label: "Utara", value: "Kelurahan Allepolea (Kecamatan Lau)" },
+                  { label: "Selatan", value: "Kelurahan Pallantikang dan Sungai Maros" },
+                  { label: "Timur", value: "Kelurahan Baji Pamai" },
+                  { label: "Barat", value: "Kelurahan Alliritengae dan Kelurahan Turikale (Kecamatan Turikale)" },
+                ].map((item, index, arr) => (
+                  <div 
+                    key={index} 
+                    className={`grid grid-cols-3 py-4 ${index !== arr.length - 1 ? 'border-b border-gray-100' : ''}`}
+                  >
+                    <span className="text-gray-700 font-semibold col-span-1">{item.label}</span>
+                    <span className="text-gray-600 col-span-2 text-right lg:text-right">
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                <span className="font-semibold">Kabupaten/Kota:</span>
-                <span>Kabupaten Maros</span>
-              </div>
-              <div className="flex justify-between items-center py-2">
-                <span className="font-semibold">Provinsi:</span>
-                <span>Sulawesi Selatan</span>
+            </div>
+
+            {/* Data Umum */}
+            <div className="bg-white rounded-lg shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Data Umum</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                  <span className="text-gray-700 font-medium">Luas Wilayah</span>
+                  <span className="text-gray-600 font-semibold">3,76 km²</span>
+                </div>
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-gray-700 font-medium">Kode Kemendagri</span>
+                  <span className="text-gray-600 font-semibold">73.09.04.1003</span>
+                </div>
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-gray-700 font-medium">Kode BPS</span>
+                  <span className="text-gray-600 font-semibold">7308020013</span>
+                </div>                
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-gray-700 font-medium">Kode Pos</span>
+                  <span className="text-gray-600 font-semibold">90515</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Letak Geografis */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Letak Geografis</h2>
+          {/* Letak Geografis - Map Section */}
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Letak Geografis</h2>
             <p className="text-gray-700 mb-6 leading-relaxed">
-              Kelurahan Baju Bodoa terletak di Kecamatan Maros, Kabupaten Maros, Provinsi Sulawesi Selatan. 
-              Kelurahan ini berada di daerah yang strategis dengan akses mudah menuju pusat kota Maros dan 
-              dilintasi oleh jalur transportasi utama.
+              Kelurahan Baju Bodoa berstatus sebagai kelurahan definitif dan tergolong pula sebagai kelurahan swasembada.
+              Kelurahan Baju Bodoa memiliki luas wilayah 3,76 km² dan terletak pada wilayah dataran rendah dengan ketinggian 0-10 mdpl.
             </p>
-            
+
             {/* Map Embed */}
             <div className="w-full rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm">
               <iframe
@@ -62,21 +107,6 @@ const ProfileKelurahan = () => {
                 referrerPolicy="no-referrer-when-downgrade"
                 style={{ border: 0 }}
               />
-            </div>
-          </div>
-
-          {/* Luas Wilayah */}
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Luas Wilayah</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-6">
-                <p className="text-gray-600 font-semibold mb-2">Total Luas Wilayah</p>
-                <p className="text-4xl font-bold text-orange-600">XX km²</p>
-              </div>
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6">
-                <p className="text-gray-600 font-semibold mb-2">Ketinggian Rata-rata</p>
-                <p className="text-4xl font-bold text-blue-600">XX m</p>
-              </div>
             </div>
           </div>
         </div>
