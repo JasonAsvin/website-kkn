@@ -2,17 +2,15 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import Layout from './components/layout/Layout';
-import Home from './pages/Home';
-// import About from './pages/About';
-import News from './pages/News';
-import Gallery from './pages/Gallery';
-import Contact from './pages/Contact';
+import Home from './pages/Beranda';
+import News from './pages/Berita';
+import Gallery from './pages/Galeri';
 import ProfileKelurahan from './pages/ProfileKelurahan';
 import Pemerintahan from './pages/Pemerintahan';
 import Infografis from './pages/Infografis';
 import LoginAdmin from './pages/admin/Login';
 import DashboardAdmin from './pages/admin/Dashboard';
-// import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import './App.css';
 
 type Instrument = {
@@ -104,7 +102,6 @@ function App() {
           <Route path="/infografis" element={<Infografis />} />
           <Route path="/berita" element={<News />} />
           <Route path="/galeri" element={<Gallery />} />
-          <Route path="/kontak" element={<Contact />} />
           <Route
             path="/_debug/instruments"
             element={
@@ -118,13 +115,13 @@ function App() {
         </Route>
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<LoginAdmin />} />
+        <Route path="/admin" element={<LoginAdmin />} />
         <Route
           path="/admin/dashboard"
           element={
-//            <ProtectedRoute>
+            <ProtectedRoute>
               <DashboardAdmin />
-//            </ProtectedRoute>
+            </ProtectedRoute>
           }
         />
       </Routes>

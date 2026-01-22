@@ -1,123 +1,22 @@
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
-
-type PopulationData = {
-  jumlah_penduduk: number;
-  penduduk_perempuan: number;
-  penduduk_lakilaki: number;
-};
-
-type AgeStat = {
-  rentang_umur: string;
-  penduduk: number;
-};
-
-type WilayahTotal = {
-  total_lingkungan: number;
-  total_rw: number;
-  total_rt: number;
-};
-
-type Lingkungan = {
-  id?: string;
-  nama_lingkungan: string;
-};
-
-type RW = {
-  id?: string;
-  nama_rw: string;
-  nama_lingkungan: string;
-};
-
-type RT = {
-  id?: string;
-  nama_rt: string;
-  nama_rw: string;
-  nama_lingkungan: string;
-};
-
-type Facility = {
-  id?: string;
-  nama_fasilitas: string;
-  alamat: string;
-  lingkungan: string;
-  kategori: string;
-};
+import { usePopulationData } from '../services/usePopulationData';
+import { useAgeStats } from '../services/useAgeStats';
+import { useWilayahAdministratif } from '../services/useWilayahAdministratif';
+import { useFasilitas } from '../services/useFasilitas';
+import { categorizeSchools } from '../services/categorizeSchools';
+import type { RT } from '../types/infografis';
 
 const Infografis = () => {
-  // Helper function to categorize schools by education level
-  const categorizeSchools = (schools: Facility[]) => {
-    const categories = [
-      {
-        name: 'Pendidikan Anak Usia Dini (PAUD)',
-        prefixes: ['KB', 'RA', 'TK'],
-        schools: [] as Facility[]
-      },
-      {
-        name: 'Pendidikan Dasar',
-        prefixes: ['MI', 'SD', 'UPTD SD'],
-        schools: [] as Facility[]
-      },
-      {
-        name: 'Pendidikan Menengah Pertama',
-        prefixes: ['MTs', 'SMP'],
-        schools: [] as Facility[]
-      },
-      {
-        name: 'Pendidikan Menengah Atas',
-        prefixes: ['MA', 'SMA'],
-        schools: [] as Facility[]
-      }
-    ];
-
-    schools.forEach(school => {
-      for (const category of categories) {
-        // Check if school name starts with any of the prefixes
-        const matchingPrefix = category.prefixes.find(prefix => 
-          school.nama_fasilitas.toUpperCase().startsWith(prefix.toUpperCase())
-        );
-        if (matchingPrefix) {
-          category.schools.push(school);
-          break;
-        }
-      }
-    });
-
-    return categories;
-  };
-
-  const [populationData, setPopulationData] = useState<PopulationData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [ageStats, setAgeStats] = useState<AgeStat[]>([]);
-  const [loadingAgeStats, setLoadingAgeStats] = useState(true);
-  const [ageStatsError, setAgeStatsError] = useState<string | null>(null);
-
-  // Wilayah Administratif state
-  const [wilayahTotal, setWilayahTotal] = useState<WilayahTotal | null>(null);
-  const [lingkunganList, setLingkunganList] = useState<Lingkungan[]>([]);
-  const [rwList, setRwList] = useState<RW[]>([]);
-  const [rtList, setRtList] = useState<RT[]>([]);
-  const [loadingWilayah, setLoadingWilayah] = useState(true);
-  const [wilayahError, setWilayahError] = useState<string | null>(null);
+  // Custom hooks for data fetching
+  const { data: populationData, loading, error } = usePopulationData();
+  // const { data: ageStats, loading: loadingAgeStats, error: ageStatsError } = useAgeStats();
+  const { wilayahTotal, lingkunganList, rwList, rtList, loading: loadingWilayah, error: wilayahError } = useWilayahAdministratif();
+  const { data: fasilitasData, loading: loadingFasilitas, error: fasilitasError } = useFasilitas();
 
   // Toggle state for collapsible sections
   const [expandLingkungan, setExpandLingkungan] = useState(false);
   const [expandRw, setExpandRw] = useState(false);
   const [expandRt, setExpandRt] = useState(false);
-
-  // Fasilitas Umum state
-  const [fasilitasData, setFasilitasData] = useState<Facility[]>([]);
-  const [loadingFasilitas, setLoadingFasilitas] = useState(true);
-  const [fasilitasError, setFasilitasError] = useState<string | null>(null);
-
-  // Toggle state for facility categories
   const [expandSekolah, setExpandSekolah] = useState(false);
   const [expandKesehatam, setExpandKesehatam] = useState(false);
   const [expandIbadah, setExpandIbadah] = useState(false);
@@ -127,244 +26,22 @@ const Infografis = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    if (!supabase) {
-      setError('Supabase not configured');
-      setLoading(false);
-      return;
-    }
-
-    let ignore = false;
-
-    const fetchPopulationData = async () => {
-      try {
-        setLoading(true);
-        const { data, error: fetchError } = await supabase
-          .from('total_penduduk')
-          .select('jumlah_penduduk, penduduk_perempuan, penduduk_lakilaki')
-          .maybeSingle();
-
-        if (ignore) return;
-
-        if (fetchError) {
-          console.error('Supabase fetch error:', fetchError);
-          setError(fetchError.message);
-        } else if (data) {
-          setPopulationData(data);
-          setError(null);
-        }
-      } catch (err) {
-        if (!ignore) {
-          console.error('Error fetching population data:', err);
-          setError(err instanceof Error ? err.message : 'Unknown error');
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchPopulationData();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // Fetch age statistics (statistik_umur)
-  useEffect(() => {
-    if (!supabase) {
-      setAgeStatsError('Supabase not configured');
-      setLoadingAgeStats(false);
-      return;
-    }
-
-    let ignore = false;
-
-    const fetchAgeStats = async () => {
-      try {
-        setLoadingAgeStats(true);
-        const { data, error: fetchError } = await supabase
-          .from('statistik_umur')
-          .select('rentang_umur, penduduk')
-          .order('id', { ascending: true });
-
-        if (ignore) return;
-
-        if (fetchError) {
-          console.error('Supabase fetch error (statistik_umur):', fetchError);
-          setAgeStatsError(fetchError.message);
-          setAgeStats([]);
-        } else {
-          setAgeStats(Array.isArray(data) ? data : []);
-          setAgeStatsError(null);
-        }
-      } catch (err) {
-        if (!ignore) {
-          console.error('Error fetching age stats:', err);
-          setAgeStatsError(err instanceof Error ? err.message : 'Unknown error');
-          setAgeStats([]);
-        }
-      } finally {
-        if (!ignore) {
-          setLoadingAgeStats(false);
-        }
-      }
-    };
-
-    fetchAgeStats();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // Fetch Wilayah Administratif data
-  useEffect(() => {
-    if (!supabase) {
-      setWilayahError('Supabase not configured');
-      setLoadingWilayah(false);
-      return;
-    }
-
-    let ignore = false;
-
-    const fetchWilayahData = async () => {
-      try {
-        setLoadingWilayah(true);
-
-        // Fetch all data
-        const { data: rtData, error: rtError } = await supabase
-          .from('wilayah_administratif')
-          .select('id, nama_rt, nama_rw, nama_lingkungan')
-          .order('nama_rw', { ascending: true });
-
-        if (ignore) return;
-
-        if (rtError) {
-          setWilayahError(rtError.message || 'Unknown error');
-        } else if (rtData) {
-          setRtList(rtData);
-
-          // Calculate unique lingkungan
-          const uniqueLingkungan = Array.from(
-            new Set(rtData.map(item => item.nama_lingkungan))
-          )
-            .filter(Boolean)
-            .sort()
-            .map((nama, idx) => ({ id: `${idx + 1}`, nama_lingkungan: nama }));
-          setLingkunganList(uniqueLingkungan);
-
-          // Calculate unique RW with their lingkungan
-          const rwMap = new Map<string, string>();
-          rtData.forEach(item => {
-            if (item.nama_rw && !rwMap.has(item.nama_rw)) {
-              rwMap.set(item.nama_rw, item.nama_lingkungan);
-            }
-          });
-          const uniqueRw = Array.from(rwMap.entries())
-            .sort(([rwA], [rwB]) => {
-              const numA = parseInt(rwA.match(/\d+/)?.[0] || '0');
-              const numB = parseInt(rwB.match(/\d+/)?.[0] || '0');
-              return numA - numB;
-            })
-            .map(([rw, lingkungan], idx) => ({
-              id: `rw-${idx + 1}`,
-              nama_rw: rw,
-              nama_lingkungan: lingkungan
-            }));
-          setRwList(uniqueRw);
-
-          // Calculate totals
-          setWilayahTotal({
-            total_lingkungan: uniqueLingkungan.length,
-            total_rw: uniqueRw.length,
-            total_rt: rtData.length
-          });
-
-          setWilayahError(null);
-        }
-      } catch (err) {
-        if (!ignore) {
-          console.error('Error fetching wilayah data:', err);
-          setWilayahError(err instanceof Error ? err.message : 'Unknown error');
-        }
-      } finally {
-        if (!ignore) {
-          setLoadingWilayah(false);
-        }
-      }
-    };
-
-    fetchWilayahData();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  // Fetch Fasilitas Umum data
-  useEffect(() => {
-    if (!supabase) {
-      setFasilitasError('Supabase not configured');
-      setLoadingFasilitas(false);
-      return;
-    }
-
-    let ignore = false;
-
-    const fetchFasilitasData = async () => {
-      try {
-        setLoadingFasilitas(true);
-
-        const { data, error: fetchError } = await supabase
-          .from('fasilitas_umum')
-          .select('id, nama_fasilitas, alamat, lingkungan, kategori')
-          .order('kategori', { ascending: true });
-
-        if (ignore) return;
-
-        if (fetchError) {
-          setFasilitasError(fetchError.message || 'Unknown error');
-        } else if (data) {
-          setFasilitasData(data);
-          setFasilitasError(null);
-        }
-      } catch (err) {
-        if (!ignore) {
-          console.error('Error fetching fasilitas data:', err);
-          setFasilitasError(err instanceof Error ? err.message : 'Unknown error');
-        }
-      } finally {
-        if (!ignore) {
-          setLoadingFasilitas(false);
-        }
-      }
-    };
-
-    fetchFasilitasData();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Infografis Kelurahan</h1>
-          <p className="text-2xl text-blue-600 font-semibold">Kelurahan Baju Bodoa</p>
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-gray-900">Infografis Kelurahan</h1>
         </div>
 
         {/* Content */}
         <div className="space-y-12">
           {/* Jumlah Penduduk */}
-          <div className="bg-white rounded-lg shadow-lg p-8 border-t-4 border-blue-500">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <span className="text-4xl">👥</span>
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+              <svg className="w-8 h-8 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+              </svg>
               Jumlah Penduduk
             </h2>
             
@@ -381,7 +58,7 @@ const Infografis = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Total Penduduk */}
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
                   <p className="text-sm font-semibold opacity-90 mb-2">Total Penduduk</p>
                   <p className="text-5xl font-bold mb-2">
                     {populationData?.jumlah_penduduk.toLocaleString('id-ID') || '0'}
@@ -389,6 +66,15 @@ const Infografis = () => {
                   <p className="text-blue-100">jiwa</p>
                 </div>
 
+                {/* Penduduk Laki-laki */}
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
+                  <p className="text-sm font-semibold opacity-90 mb-2">Penduduk Laki-laki</p>
+                  <p className="text-5xl font-bold mb-2">
+                    {populationData?.penduduk_lakilaki.toLocaleString('id-ID') || '0'}
+                  </p>
+                  <p className="text-cyan-100">jiwa</p>
+                </div>
+                
                 {/* Penduduk Perempuan */}
                 <div className="bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
                   <p className="text-sm font-semibold opacity-90 mb-2">Penduduk Perempuan</p>
@@ -397,21 +83,12 @@ const Infografis = () => {
                   </p>
                   <p className="text-pink-100">jiwa</p>
                 </div>
-
-                {/* Penduduk Laki-laki */}
-                <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
-                  <p className="text-sm font-semibold opacity-90 mb-2">Penduduk Laki-laki</p>
-                  <p className="text-5xl font-bold mb-2">
-                    {populationData?.penduduk_lakilaki.toLocaleString('id-ID') || '0'}
-                  </p>
-                  <p className="text-cyan-100">jiwa</p>
-                </div>
               </div>
             )}
 
               {/* Jumlah Penduduk berdasarkan Umur */}
-                <div className="bg-white rounded-lg shadow-lg mt-4 p-8 border-t-4 border-blue-500">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Jumlah Penduduk berdasarkan Umur</h3>
+                {/* <div className="bg-white rounded-lg shadow-md mt-4 p-8">
+                  <h3 className="text-xl font-bold text-gray-900 mb-6">Jumlah Penduduk berdasarkan Umur</h3>
 
                   {ageStatsError && (
                     <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -446,7 +123,7 @@ const Infografis = () => {
                       )}
                     </div>
                   )}
-                </div>
+                </div> */}
 
             {/* Chart Placeholder */}
             <div className="mt-8 p-6 bg-gray-100 rounded-lg flex items-center justify-center min-h-64">
@@ -461,9 +138,11 @@ const Infografis = () => {
           </div>
 
           {/* Wilayah Administratif */}
-          <div className="bg-white rounded-lg shadow-lg p-8 border-t-4 border-green-500">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <span className="text-4xl">🗂️</span>
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+              <svg className="w-8 h-8 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
               Wilayah Administratif
             </h2>
 
@@ -605,23 +284,14 @@ const Infografis = () => {
                 </div>
               </div>
             )}
-
-            {/* Map Placeholder
-            <div className="mt-8 p-6 bg-gray-100 rounded-lg flex items-center justify-center min-h-64">
-              <div className="text-center">
-                <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 9m0 13V9m0 0L9 5" />
-                </svg>
-                <p className="text-gray-500 font-semibold">Peta Wilayah Administratif</p>
-                <p className="text-gray-400 text-sm">Visualisasi peta akan ditampilkan segera</p>
-              </div>
-            </div> */}
           </div>
 
           {/* Fasilitas Umum */}
-          <div className="bg-white rounded-lg shadow-lg p-8 border-t-4 border-orange-500">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              <span className="text-4xl">🏛️</span>
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+              <svg className="w-8 h-8 text-teal-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+              </svg>
               Fasilitas Umum
             </h2>
 
@@ -787,29 +457,29 @@ const Infografis = () => {
                 </div>
               </div>
             )}
-          </div>
 
             {/* Additional Facilities */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <p className="font-semibold text-gray-900 mb-2">Fasilitas Lainnya</p>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li>• Jalan Raya</li>
-                  <li>• Sarana Air Bersih</li>
-                  <li>• Listrik & Penerangan</li>
-                  <li>• Telekomunikasi</li>
+                  <li>• Pasar Raya</li>
+                  <li>• Lapangan Olahraga</li>
+                  <li>• Lahan Pertanian</li>
+                  <li>• Perkebunan</li>
                 </ul>
               </div>
-              <div className="p-4 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <p className="font-semibold text-gray-900 mb-2">Infrastruktur Publik</p>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li>• Pasar/Pusat Perdagangan</li>
-                  <li>• Ruang Publik</li>
+                  <li>• Pasar Pusat Perdagangan</li>
                   <li>• Sarana Olahraga</li>
-                  <li>• Taman/Ruang Hijau</li>
+                  <li>• Taman Kota/Lingkungan</li>
+                  <li>• Balai Pertemuan</li>
                 </ul>
               </div>
             </div>
+          </div>
 
           {/* Info Box */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6">

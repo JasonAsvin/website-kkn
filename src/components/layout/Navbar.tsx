@@ -81,7 +81,7 @@ const Navbar = () => {
                     : linkClass(isActive('/'), true)
                 }`}
               >
-                Home
+                Beranda
               </button>
               {/* Profil Dropdown */}
               <div className="relative group">
@@ -158,16 +158,6 @@ const Navbar = () => {
                 }`}
               >
                 Berita
-              </button>
-              <button
-                onClick={() => navigate('/acara')}
-                className={`${
-                  isHomepage && !isScrolled
-                    ? linkClass(isActive('/kontak'), false)
-                    : linkClass(isActive('/kontak'), true)
-                }`}
-              >
-                Acara
               </button>
               <button
                 onClick={() => navigate('/umkm')}
@@ -325,19 +315,6 @@ const Navbar = () => {
               }`}
             >
               Berita
-            </button>
-            <button
-              onClick={() => {
-                navigate('/kontak');
-                setIsOpen(false);
-              }}
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                isHomepage && !isScrolled
-                  ? linkClass(isActive('/kontak'), false)
-                  : linkClass(isActive('/kontak'), true)
-              }`}
-            >
-              Acara
             </button>
             <button
               onClick={() => {
