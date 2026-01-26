@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminSidebar from '../../components/layout/AdminSidebar';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import { supabase } from '../../services/supabase';
-import { useStrukturOrganisasi, type StrukturOrganisasi } from '../../services/useStrukturOrganisasi';
+import { useStrukturOrganisasi } from '../../services/useStrukturOrganisasi';
 
 type StatCard = {
 	label: string;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminSidebar from '../../components/layout/AdminSidebar';
 import { supabase } from '../../services/supabase';
-import { useStrukturOrganisasi, type StrukturOrganisasi } from '../../services/useStrukturOrganisasi';
+import { useStrukturOrganisasi } from '../../services/useStrukturOrganisasi';
 
 export default function TambahStruktur() {
 	const navigate = useNavigate();
