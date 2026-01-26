@@ -1,7 +1,10 @@
+import { useNavigate } from 'react-router-dom';
+
 type NavItem = {
   key: string;
   label: string;
   icon: string;
+  path: string;
 };
 
 type AdminSidebarProps = {
@@ -11,19 +14,27 @@ type AdminSidebarProps = {
 };
 
 const navItems: NavItem[] = [
-  { key: 'dashboard', label: 'Dashboard', icon: '🏠' },
-  { key: 'penduduk', label: 'Data Penduduk', icon: '👥' },
-  { key: 'berita', label: 'Berita', icon: '📄' },
-  { key: 'galeri', label: 'Galeri', icon: '🖼️' },
-  { key: 'umkm', label: 'UMKM', icon: '🏪' },
-  { key: 'pengaturan', label: 'Pengaturan', icon: '⚙️' },
+  { key: 'dashboard', label: 'Dashboard', icon: '🏠', path: '/admin/dashboard' },
+  { key: 'struktur', label: 'Struktur Organisasi', icon: '🏢', path: '/admin/manajemen-struktur' },
+  { key: 'wilayah', label: 'Wilayah Administratif', icon: '🗺️', path: '/admin/manajemen-wilayah' },
+  { key: 'penduduk', label: 'Penduduk', icon: '👥', path: '/admin/manajemen-penduduk' },
+  { key: 'fasilitas', label: 'Fasilitas', icon: '🏛️', path: '/admin/manajemen-fasilitas' },
+  { key: 'galeri', label: 'Galeri', icon: '🖼️', path: '/admin/manajemen-galeri' },
+  { key: 'aset', label: 'Manajemen Aset', icon: '🖼️', path: '/admin/manajemen-aset' },
 ];
 
 export default function AdminSidebar({ activeKey, onSelect, onLogout }: AdminSidebarProps) {
+  const navigate = useNavigate();
+
+  const handleNavClick = (key: string, path: string) => {
+    onSelect(key);
+    navigate(path);
+  };
+
   return (
-    <aside className="w-64 bg-[#1e293b] text-white flex flex-col border-r border-gray-800">
+    <aside className="w-64 bg-[#1e293b] text-white flex flex-col border-r border-gray-800 h-screen sticky top-0">
       {/* Header */}
-      <div className="px-5 py-5 flex items-center gap-3 border-b border-white/10">
+      <div className="px-5 py-5 flex items-center gap-3 border-b border-white/10 flex-shrink-0">
         <div className="h-11 w-11 rounded-xl flex items-center justify-center font-bold text-lg">
           <img 
             src="/Kabupaten_Maros.png" 
@@ -42,11 +53,11 @@ export default function AdminSidebar({ activeKey, onSelect, onLogout }: AdminSid
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <button
             key={item.key}
-            onClick={() => onSelect(item.key)}
+            onClick={() => handleNavClick(item.key, item.path)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
               activeKey === item.key
                 ? 'bg-emerald-500 text-white shadow-lg'
@@ -60,7 +71,7 @@ export default function AdminSidebar({ activeKey, onSelect, onLogout }: AdminSid
       </nav>
 
       {/* Logout */}
-      <div className="px-3 pb-4 border-t border-white/10 pt-4">
+      <div className="px-3 pb-4 border-t border-white/10 pt-4 flex-shrink-0">
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-red-500/20 hover:text-red-400 transition"

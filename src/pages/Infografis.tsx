@@ -1,30 +1,56 @@
 import { useEffect, useState } from 'react';
-import { usePopulationData } from '../services/usePopulationData';
-import { useAgeStats } from '../services/useAgeStats';
+import { usePopulationByLingkungan } from '../services/usePopulationByLingkungan';
 import { useWilayahAdministratif } from '../services/useWilayahAdministratif';
 import { useFasilitas } from '../services/useFasilitas';
 import { categorizeSchools } from '../services/categorizeSchools';
-import type { RT } from '../types/infografis';
+import { supabase } from '../services/supabase';
+import { Input } from '../components/common/Input';
+import { Modal } from '../components/common/Modal';
+import { Accordion } from '../components/common/Accordion';
 
 const Infografis = () => {
   // Custom hooks for data fetching
-  const { data: populationData, loading, error } = usePopulationData();
-  // const { data: ageStats, loading: loadingAgeStats, error: ageStatsError } = useAgeStats();
-  const { wilayahTotal, lingkunganList, rwList, rtList, loading: loadingWilayah, error: wilayahError } = useWilayahAdministratif();
+  const { data: populationByLingkungan, loading: loadingByLingkungan, error: errorByLingkungan } = usePopulationByLingkungan();
+  const { wilayahTotal, rtList, loading: loadingWilayah, error: wilayahError } = useWilayahAdministratif();
   const { data: fasilitasData, loading: loadingFasilitas, error: fasilitasError } = useFasilitas();
 
+  const wilayahImageUrl = supabase?.storage
+    .from('galeri_foto')
+    .getPublicUrl('pemerintahan/Pembagian_Wilayah.png').data.publicUrl 
+    ? `${supabase.storage.from('galeri_foto').getPublicUrl('pemerintahan/Pembagian_Wilayah.png').data.publicUrl}?t=${new Date().getTime()}`
+    : '';
+
+  // Calculate totals from populationByLingkungan
+  const totals = populationByLingkungan?.reduce((acc, curr) => ({
+    total: acc.total + (curr.jumlah_penduduk || 0),
+    male: acc.male + (curr.penduduk_lakilaki || 0),
+    female: acc.female + (curr.penduduk_perempuan || 0)
+  }), { total: 0, male: 0, female: 0 }) || { total: 0, male: 0, female: 0 };
+
   // Toggle state for collapsible sections
-  const [expandLingkungan, setExpandLingkungan] = useState(false);
-  const [expandRw, setExpandRw] = useState(false);
   const [expandRt, setExpandRt] = useState(false);
   const [expandSekolah, setExpandSekolah] = useState(false);
   const [expandKesehatam, setExpandKesehatam] = useState(false);
   const [expandIbadah, setExpandIbadah] = useState(false);
   const [expandKantor, setExpandKantor] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
+  
+  useEffect(() => {
+    if (showMapModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
 
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showMapModal]);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8 mt-20">
@@ -45,13 +71,13 @@ const Infografis = () => {
               Jumlah Penduduk
             </h2>
             
-            {error && (
+            {errorByLingkungan && (
               <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                <p>Error loading data: {error}</p>
+                <p>Error loading data: {errorByLingkungan}</p>
               </div>
             )}
 
-            {loading ? (
+            {loadingByLingkungan ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">Loading data...</p>
               </div>
@@ -61,7 +87,7 @@ const Infografis = () => {
                 <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
                   <p className="text-sm font-semibold opacity-90 mb-2">Total Penduduk</p>
                   <p className="text-5xl font-bold mb-2">
-                    {populationData?.jumlah_penduduk.toLocaleString('id-ID') || '0'}
+                    {totals.total.toLocaleString('id-ID')}
                   </p>
                   <p className="text-blue-100">jiwa</p>
                 </div>
@@ -70,7 +96,7 @@ const Infografis = () => {
                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
                   <p className="text-sm font-semibold opacity-90 mb-2">Penduduk Laki-laki</p>
                   <p className="text-5xl font-bold mb-2">
-                    {populationData?.penduduk_lakilaki.toLocaleString('id-ID') || '0'}
+                    {totals.male.toLocaleString('id-ID')}
                   </p>
                   <p className="text-cyan-100">jiwa</p>
                 </div>
@@ -79,61 +105,102 @@ const Infografis = () => {
                 <div className="bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-lg p-8 shadow-lg text-center transform hover:scale-105 transition">
                   <p className="text-sm font-semibold opacity-90 mb-2">Penduduk Perempuan</p>
                   <p className="text-5xl font-bold mb-2">
-                    {populationData?.penduduk_perempuan.toLocaleString('id-ID') || '0'}
+                    {totals.female.toLocaleString('id-ID')}
                   </p>
                   <p className="text-pink-100">jiwa</p>
                 </div>
               </div>
             )}
+            
+            {/* Penduduk Per Lingkungan */}
+            <div className="mt-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Jumlah Penduduk Per Lingkungan</h3>
 
-              {/* Jumlah Penduduk berdasarkan Umur */}
-                {/* <div className="bg-white rounded-lg shadow-md mt-4 p-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6">Jumlah Penduduk berdasarkan Umur</h3>
+              {errorByLingkungan && (
+                <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                  <p>Error loading data: {errorByLingkungan}</p>
+                </div>
+              )}
 
-                  {ageStatsError && (
-                    <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                      <p>Error loading umur data: {ageStatsError}</p>
-                    </div>
-                  )}
+              {loadingByLingkungan ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Loading data per lingkungan...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(populationByLingkungan || []).length > 0 ? (
+                    populationByLingkungan.map((lingkungan) => (
+                      <div key={lingkungan.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition">
+                        <h4 className="font-bold text-gray-900 mb-4 text-lg">{lingkungan.nama_lingkungan}</h4>
+                        
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                            <span className="text-gray-600">Total Penduduk</span>
+                            <span className="font-bold text-emerald-600 text-lg">
+                              {lingkungan.jumlah_penduduk.toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-500 flex items-center gap-2">
+                              <span className="text-blue-500">♂</span> Laki-laki
+                            </span>
+                            <span className="font-semibold text-blue-600">
+                              {lingkungan.penduduk_lakilaki.toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-500 flex items-center gap-2">
+                              <span className="text-pink-500">♀</span> Perempuan
+                            </span>
+                            <span className="font-semibold text-pink-600">
+                              {lingkungan.penduduk_perempuan.toLocaleString('id-ID')}
+                            </span>
+                          </div>
 
-                  {loadingAgeStats ? (
-                    <div className="text-center py-6">
-                      <p className="text-gray-500">Loading umur data...</p>
-                    </div>
-                  ) : (
-                    <div className="overflow-hidden rounded-lg border border-gray-200">
-                      <div className="grid grid-cols-2 bg-gray-50 text-gray-700 font-semibold px-4 py-3 border-b">
-                        <div>Rentang Umur</div>
-                        <div className="text-right">Jumlah</div>
-                      </div>
-                      {ageStats.length > 0 ? (
-                        ageStats.map((row, idx) => (
-                          <div
-                            key={`${row.rentang_umur}-${idx}`}
-                            className="grid grid-cols-2 items-center px-4 py-3 border-b last:border-b-0"
-                          >
-                            <div className="text-gray-900">{row.rentang_umur}</div>
-                            <div className="text-gray-900 text-right">
-                              {Number(row.penduduk).toLocaleString('id-ID')}
+                          {/* Progress bars */}
+                          <div className="mt-4 pt-3 border-t border-gray-200">
+                            <div className="text-xs text-gray-500 mb-2">Komposisi Gender</div>
+                            <div className="flex gap-2">
+                              <div className="flex-1">
+                                <div className="h-2 bg-blue-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-blue-500"
+                                    style={{
+                                      width: `${(lingkungan.penduduk_lakilaki / lingkungan.jumlah_penduduk) * 100}%`,
+                                    }}
+                                  />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {((lingkungan.penduduk_lakilaki / lingkungan.jumlah_penduduk) * 100).toFixed(1)}%
+                                </p>
+                              </div>
+                              <div className="flex-1">
+                                <div className="h-2 bg-pink-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-pink-500"
+                                    style={{
+                                      width: `${(lingkungan.penduduk_perempuan / lingkungan.jumlah_penduduk) * 100}%`,
+                                    }}
+                                  />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {((lingkungan.penduduk_perempuan / lingkungan.jumlah_penduduk) * 100).toFixed(1)}%
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="px-4 py-3 text-gray-500">Tidak ada data umur.</div>
-                      )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-8 text-gray-500">
+                      Tidak ada data penduduk per lingkungan.
                     </div>
                   )}
-                </div> */}
-
-            {/* Chart Placeholder */}
-            <div className="mt-8 p-6 bg-gray-100 rounded-lg flex items-center justify-center min-h-64">
-              <div className="text-center">
-                <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <p className="text-gray-500 font-semibold">Grafik Statistik Penduduk</p>
-                <p className="text-gray-400 text-sm">Visualisasi akan ditampilkan segera</p>
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -158,134 +225,105 @@ const Infografis = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Lingkungan/Dusun Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandLingkungan(!expandLingkungan)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-teal-100 hover:from-teal-100 hover:to-teal-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🏘️</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">Lingkungan</p>
-                        <p className="text-sm text-gray-600">Total: {wilayahTotal?.total_lingkungan || 0}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandLingkungan ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandLingkungan && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200">
-                      {lingkunganList.length > 0 ? (
-                        <ul className="space-y-2">
-                          {lingkunganList.map((item) => (
-                            <li key={item.id || item.nama_lingkungan} className="flex items-center gap-2 text-gray-700">
-                              <span className="text-teal-600">▸</span> {item.nama_lingkungan}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-500">Tidak ada data lingkungan.</p>
-                      )}
-                    </div>
-                  )}
-                </div>
 
-                {/* RW Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandRw(!expandRw)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🏘️</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">RW (Rukun Warga)</p>
-                        <p className="text-sm text-gray-600">Total: {wilayahTotal?.total_rw || 0}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandRw ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandRw && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200">
-                      {rwList.length > 0 ? (
-                        <ul className="space-y-2">
-                          {rwList.map((item) => (
-                            <li key={item.id || item.nama_rw} className="flex items-center gap-2 text-gray-700">
-                              <span className="text-green-600">▸</span> {item.nama_rw} - {item.nama_lingkungan}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-500">Tidak ada data RW.</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* RT Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandRt(!expandRt)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🏘️</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">RT (Rukun Tetangga)</p>
-                        <p className="text-sm text-gray-600">Total: {wilayahTotal?.total_rt || 0}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandRt ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandRt && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200">
+                {/* Struktur Wilayah */}
+                <Accordion
+                  title="Struktur Wilayah"
+                  icon="🏘️"
+                  isExpanded={expandRt}
+                  onToggle={() => setExpandRt(!expandRt)}
+                  color="emerald"
+                >
                       {rtList.length > 0 ? (
-                        <div className="space-y-4">
-                          {Object.entries(
-                            rtList.reduce((acc, item) => {
-                              const rwMatch = item.nama_rw?.match(/\d+/);
-                              const rwNumber = rwMatch ? rwMatch[0].padStart(3, '0') : '000';
-                              const normalizedRW = `RW ${rwNumber}`;
-
-                              if (!acc[normalizedRW]) acc[normalizedRW] = [];
-                              acc[normalizedRW].push(item);
-                              return acc;
-                            }, {} as Record<string, RT[]>)
-                          )
-                            .sort(([rwA], [rwB]) => {
-                              const numA = parseInt(rwA.match(/\d+/)?.[0] || '0');
-                              const numB = parseInt(rwB.match(/\d+/)?.[0] || '0');
-                              return numA - numB;
+                        <div className="space-y-6">
+                          {Array.from(new Set(rtList.map(item => item.nama_lingkungan)))
+                            .sort((a, b) => {
+                              const preferred = ['Kassikebo', 'Betang', 'Masembo'];
+                              const ia = preferred.indexOf(a);
+                              const ib = preferred.indexOf(b);
+                              if (ia !== -1 && ib !== -1) return ia - ib;
+                              if (ia !== -1) return -1;
+                              if (ib !== -1) return 1;
+                              return a.localeCompare(b);
                             })
-                            .map(([rw, items]) => (
-                              <div key={rw}>
-                                <p className="font-semibold text-emerald-700 mb-2"> {rw.padStart(3, '0')}</p>
-                                <ul className="space-y-1 ml-4">
-                                  {items
-                                    .sort((a, b) => {
-                                      const numA = parseInt(a.nama_rt.match(/\d+/)?.[0] || '0');
-                                      const numB = parseInt(b.nama_rt.match(/\d+/)?.[0] || '0');
-                                      return numA - numB;
-                                    })
-                                    .map((item) => (
-                                      <li key={item.id || item.nama_rt} className="flex items-center gap-2 text-gray-700">
-                                        <span className="text-emerald-600">▸</span> {item.nama_rt} / {item.nama_rw} - {item.nama_lingkungan}
-                                      </li>
-                                    ))}
-                                </ul>
-                              </div>
-                            ))}
+                            .map((lingkungan) => {
+                              const lingkunganRts = rtList
+                                .filter(item => item.nama_lingkungan === lingkungan)
+                                .sort((a, b) => {
+                                  const rwA = parseInt(a.nama_rw.match(/\d+/)?.[0] || '0');
+                                  const rwB = parseInt(b.nama_rw.match(/\d+/)?.[0] || '0');
+                                  const rtA = parseInt(a.nama_rt.match(/\d+/)?.[0] || '0');
+                                  const rtB = parseInt(b.nama_rt.match(/\d+/)?.[0] || '0');
+                                  return rwA !== rwB ? rwA - rwB : rtA - rtB;
+                                });
+
+                              return (
+                                <div key={lingkungan} className="border border-gray-300 rounded-lg overflow-hidden">
+                                  {/* Tab Header */}
+                                  <div className="bg-emerald-100 px-4 py-3 border-b border-gray-300">
+                                    <p className="font-semibold text-emerald-900">Lingkungan {lingkungan}</p>
+                                  </div>
+
+                                  {/* Table */}
+                                  <div className="w-full overflow-x-auto overflow-y-hidden border-t border-gray-200">
+                                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                      <thead>
+                                        <tr className="bg-emerald-50 border-b border-gray-300">
+                                          <th className="px-4 py-2 text-left font-semibold text-gray-700 w-1/2">Ketua RT</th>
+                                          <th className="px-4 py-2 text-center font-semibold text-gray-700 w-1/4">RT</th>
+                                          <th className="px-4 py-2 text-center font-semibold text-gray-700 w-1/4">RW</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {lingkunganRts.map((item) => (
+                                          <tr key={item.id || item.nama_rt} className="border-b border-gray-200 hover:bg-emerald-50 transition">
+                                            <td className="px-4 py-2 text-gray-700 font-medium w-1/2">{item.nama_ketua}</td>
+                                            <td className="px-4 py-2 text-gray-700 w-1/4 text-center">{item.nama_rt}</td>
+                                            <td className="px-4 py-2 text-gray-700 w-1/4 text-center">{item.nama_rw}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              );
+                            })}
                         </div>
                       ) : (
                         <p className="text-gray-500">Tidak ada data RT.</p>
                       )}
+                </Accordion>
+
+                {wilayahImageUrl && (
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <div 
+                      onClick={() => setShowMapModal(true)}
+                      className="cursor-zoom-in w-full flex justify-center group relative"
+                    >
+                      <img
+                        src={wilayahImageUrl}
+                        alt="Peta Pembagian Wilayah"
+                        className="w-full rounded-lg shadow-lg transition transform hover:brightness-95"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 rounded-lg">
+                        <span className="bg-white/80 px-4 py-2 rounded-full text-sm font-medium">Klik untuk memperbesar</span>
+                      </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
+          {/* Map Modal */}
+          <Modal isOpen={showMapModal} onClose={() => setShowMapModal(false)}>
+            <img
+              src={wilayahImageUrl}
+              alt="Peta Pembagian Wilayah"
+              className="max-w-full max-h-[90vh] rounded-md shadow-2xl object-contain"
+              loading="lazy"
+            />
+          </Modal>
           {/* Fasilitas Umum */}
           <div className="bg-white rounded-lg shadow-md p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
@@ -308,22 +346,14 @@ const Infografis = () => {
             ) : (
               <div className="space-y-4">
                 {/* Sekolah Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandSekolah(!expandSekolah)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🏫</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">Sekolah</p>
-                        <p className="text-sm text-gray-600">Total: {fasilitasData.filter(f => f.kategori === 'Sekolah').length}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandSekolah ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandSekolah && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200 max-h-96 overflow-y-auto pb-4">
+                <Accordion
+                  title="Sekolah"
+                  icon="🏫"
+                  isExpanded={expandSekolah}
+                  onToggle={() => setExpandSekolah(!expandSekolah)}
+                  subtitle={`Total: ${fasilitasData.filter(f => f.kategori === 'Sekolah').length}`}
+                  color="yellow"
+                >
                       {fasilitasData.filter(f => f.kategori === 'Sekolah').length > 0 ? (
                         <div className="space-y-4">
                           {categorizeSchools(fasilitasData.filter(f => f.kategori === 'Sekolah')).map((category, idx) => (
@@ -341,7 +371,7 @@ const Infografis = () => {
                                         <ul className="ml-4 space-y-1">
                                           {prefixSchools.map((item) => (
                                             <li key={item.id || item.nama_fasilitas} className="flex items-center gap-2 text-gray-600 text-sm">
-                                              <span className="text-yellow-600">▸</span> {item.nama_fasilitas}, {item.alamat}, {item.lingkungan}
+                                              <span className="text-yellow-600">▸</span> {item.nama_fasilitas}, {item.alamat}, Lingkungan {item.lingkungan}
                                             </li>
                                           ))}
                                         </ul>
@@ -356,133 +386,80 @@ const Infografis = () => {
                       ) : (
                         <p className="text-gray-500">Tidak ada data Sekolah.</p>
                       )}
-                    </div>
-                  )}
-                </div>
+                </Accordion>
 
                 {/* Fasilitas Kesehatan Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandKesehatam(!expandKesehatam)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🏥</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">Fasilitas Kesehatan</p>
-                        <p className="text-sm text-gray-600">Total: {fasilitasData.filter(f => f.kategori === 'Fasilitas Kesehatan').length}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandKesehatam ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandKesehatam && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200 max-h-96 overflow-y-auto">
+                <Accordion
+                  title="Fasilitas Kesehatan"
+                  icon="🏥"
+                  isExpanded={expandKesehatam}
+                  onToggle={() => setExpandKesehatam(!expandKesehatam)}
+                  subtitle={`Total: ${fasilitasData.filter(f => f.kategori === 'Fasilitas Kesehatan').length}`}
+                  color="red"
+                >
                       {fasilitasData.filter(f => f.kategori === 'Fasilitas Kesehatan').length > 0 ? (
                         <ul className="space-y-2">
                           {fasilitasData.filter(f => f.kategori === 'Fasilitas Kesehatan').map((item) => (
                             <li key={item.id || item.nama_fasilitas} className="flex items-center gap-2 text-gray-700">
-                              <span className="text-red-600">▸</span> {item.nama_fasilitas}, {item.alamat}, {item.lingkungan}
+                              <span className="text-red-600">▸</span> {item.nama_fasilitas}, {item.alamat}, Lingkungan {item.lingkungan}
                             </li>
                           ))}
                         </ul>
                       ) : (
                         <p className="text-gray-500">Tidak ada data Fasilitas Kesehatan.</p>
                       )}
-                    </div>
-                  )}
-                </div>
+                </Accordion>
 
                 {/* Tempat Ibadah Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandIbadah(!expandIbadah)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🕌</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">Tempat Ibadah</p>
-                        <p className="text-sm text-gray-600">Total: {fasilitasData.filter(f => f.kategori === 'Tempat Ibadah').length}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandIbadah ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandIbadah && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200 max-h-96 overflow-y-auto">
+                <Accordion
+                  title="Tempat Ibadah"
+                  icon="🕌"
+                  isExpanded={expandIbadah}
+                  onToggle={() => setExpandIbadah(!expandIbadah)}
+                  subtitle={`Total: ${fasilitasData.filter(f => f.kategori === 'Tempat Ibadah').length}`}
+                  color="indigo"
+                >
                       {fasilitasData.filter(f => f.kategori === 'Tempat Ibadah').length > 0 ? (
                         <ul className="space-y-2">
                           {fasilitasData.filter(f => f.kategori === 'Tempat Ibadah').map((item) => (
                             <li key={item.id || item.nama_fasilitas} className="flex items-center gap-2 text-gray-700">
-                              <span className="text-indigo-600">▸</span> {item.nama_fasilitas}, {item.alamat}, {item.lingkungan}
+                              <span className="text-indigo-600">▸</span> {item.nama_fasilitas}, {item.alamat}, Lingkungan {item.lingkungan}
                             </li>
                           ))}
                         </ul>
                       ) : (
                         <p className="text-gray-500">Tidak ada data Tempat Ibadah.</p>
                       )}
-                    </div>
-                  )}
-                </div>
+                </Accordion>
 
                 {/* Kantor Pelayanan Section */}
-                <div className="border border-gray-200 rounded-lg">
-                  <button
-                    onClick={() => setExpandKantor(!expandKantor)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-violet-50 to-violet-100 hover:from-violet-100 hover:to-violet-200 transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl">🏢</span>
-                      <div className="text-left">
-                        <p className="font-semibold text-gray-900">Kantor Pelayanan</p>
-                        <p className="text-sm text-gray-600">Total: {fasilitasData.filter(f => f.kategori === 'Kantor Pelayanan').length}</p>
-                      </div>
-                    </div>
-                    <span className={`text-2xl transition-transform ${expandKantor ? 'rotate-180' : ''}`}>▼</span>
-                  </button>
-                  {expandKantor && (
-                    <div className="p-4 bg-gray-50 border-t border-gray-200 max-h-96 overflow-y-auto">
+                <Accordion
+                  title="Kantor Pelayanan"
+                  icon="🏢"
+                  isExpanded={expandKantor}
+                  onToggle={() => setExpandKantor(!expandKantor)}
+                  subtitle={`Total: ${fasilitasData.filter(f => f.kategori === 'Kantor Pelayanan').length}`}
+                  color="violet"
+                >
                       {fasilitasData.filter(f => f.kategori === 'Kantor Pelayanan').length > 0 ? (
                         <ul className="space-y-2">
                           {fasilitasData.filter(f => f.kategori === 'Kantor Pelayanan').map((item) => (
                             <li key={item.id || item.nama_fasilitas} className="flex items-center gap-2 text-gray-700">
-                              <span className="text-violet-600">▸</span> {item.nama_fasilitas}, {item.alamat}, {item.lingkungan}
+                              <span className="text-violet-600">▸</span> {item.nama_fasilitas}, {item.alamat}, Lingkungan {item.lingkungan}
                             </li>
                           ))}
                         </ul>
                       ) : (
                         <p className="text-gray-500">Tidak ada data Kantor Pelayanan.</p>
                       )}
-                    </div>
-                  )}
-                </div>
+                </Accordion>
               </div>
             )}
 
-            {/* Additional Facilities */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <p className="font-semibold text-gray-900 mb-2">Fasilitas Lainnya</p>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li>• Pasar Raya</li>
-                  <li>• Lapangan Olahraga</li>
-                  <li>• Lahan Pertanian</li>
-                  <li>• Perkebunan</li>
-                </ul>
-              </div>
-              <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <p className="font-semibold text-gray-900 mb-2">Infrastruktur Publik</p>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li>• Pasar Pusat Perdagangan</li>
-                  <li>• Sarana Olahraga</li>
-                  <li>• Taman Kota/Lingkungan</li>
-                  <li>• Balai Pertemuan</li>
-                </ul>
-              </div>
-            </div>
           </div>
 
-          {/* Info Box */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6">
+          {/* Informasi Tambahan */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <p className="text-center text-gray-700">
               <span className="font-semibold">Catatan:</span> Data infografis merupakan data terkini dan akan diperbarui secara berkala sesuai dengan perkembangan kelurahan.
             </p>

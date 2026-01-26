@@ -28,14 +28,6 @@ const ProfileKelurahan = () => {
                 Katto Bokko merupakan upacara adat budaya tahunan Kerajaan Marusu yang melibatkan komponen masyarakat dan dilakukan sebelum melakukan panen raya.
               </p>
             </div>
-
-            {/* Large Placeholder Box
-            <div className="mt-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg h-64 flex items-center justify-center">
-              <div className="text-center text-white">
-                <p className="text-xl font-semibold">Image Placeholder</p>
-                <p className="text-sm opacity-80 mt-2">Gambar atau konten visual akan ditampilkan di sini</p>
-              </div>
-            </div> */}
           </div>
 
           {/* Two Column Layout: Batas Wilayah & Data Umum */}

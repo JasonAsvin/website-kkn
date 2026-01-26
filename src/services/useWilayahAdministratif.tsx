@@ -26,7 +26,7 @@ export const useWilayahAdministratif = () => {
         setLoading(true);
         const { data: rtData, error: rtError } = await client
           .from('wilayah_administratif')
-          .select('id, nama_rt, nama_rw, nama_lingkungan')
+          .select('id, nama_ketua, nama_rt, nama_rw, nama_lingkungan')
           .order('nama_rw', { ascending: true });
 
         if (ignore) return;

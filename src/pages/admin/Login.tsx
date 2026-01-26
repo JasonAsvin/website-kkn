@@ -94,12 +94,7 @@ export default function LoginAdmin() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm text-gray-700 font-medium">
-                <label>Password</label>
-                <button type="button" className="text-teal-600 hover:underline text-xs">
-                  Lupa password?
-                </button>
-              </div>
+              <label className="block text-sm text-gray-700 font-medium">Password</label>
               <input
                 type="password"
                 value={password}
@@ -119,7 +114,7 @@ export default function LoginAdmin() {
                 <span>Ingat saya</span>
               </label>
               <button type="button" className="text-teal-600 hover:underline text-xs">
-                Hubungi Admin
+                Lupa password?
               </button>
             </div>
 
