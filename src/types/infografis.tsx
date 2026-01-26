@@ -4,11 +4,6 @@ export interface PopulationData {
   penduduk_lakilaki: number;
 }
 
-export interface AgeStat {
-  rentang_umur: string;
-  penduduk: number;
-}
-
 export interface WilayahTotal {
   total_lingkungan: number;
   total_rw: number;
@@ -28,6 +23,7 @@ export interface RW {
 
 export interface RT {
   id?: string;
+  nama_ketua: string;
   nama_rt: string;
   nama_rw: string;
   nama_lingkungan: string;

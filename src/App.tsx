@@ -1,9 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import Layout from './components/layout/Layout';
 import Home from './pages/Beranda';
-import News from './pages/Berita';
 import Gallery from './pages/Galeri';
 import ProfileKelurahan from './pages/ProfileKelurahan';
 import Pemerintahan from './pages/Pemerintahan';
@@ -11,118 +8,109 @@ import Infografis from './pages/Infografis';
 import LoginAdmin from './pages/admin/Login';
 import DashboardAdmin from './pages/admin/Dashboard';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import ManajemenPenduduk from './pages/admin/ManajemenPenduduk';
+import EditPenduduk from './pages/admin/EditPenduduk';
+import ManajemenGaleri from './pages/admin/ManajemenGaleri';
+import TambahGaleri from './pages/admin/TambahGaleri';
+import EditGaleri from './pages/admin/EditGaleri';
+import ManajemenFasilitas from './pages/admin/ManajemenFasilitas';
+import TambahFasilitas from './pages/admin/TambahFasilitas';
+import ManajemenStruktur from './pages/admin/ManajemenStruktur';
+import TambahStruktur from './pages/admin/TambahStruktur';
+import ManajemenWilayah from './pages/admin/ManajemenWilayah';
+import TambahWilayah from './pages/admin/TambahWilayah';
+import ManajemenAset from './pages/admin/ManajemenAset';
 import './App.css';
 
-type Instrument = {
-  id?: string;
-  name: string;
-};
-
-type InstrumentsListProps = {
-  instruments: Instrument[];
-  loading: boolean;
-  error: string | null;
-};
-
-// Initialize Supabase client only if environment variables are available
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
-
-function InstrumentsList({ instruments, loading, error }: InstrumentsListProps) {
-  if (loading) return <p>Loading instruments...</p>;
-  if (error) return <p>Failed to load instruments: {error}</p>;
-  if (!instruments.length) return <p>No instruments found.</p>;
-
-  return (
-    <ul>
-      {instruments.map((instrument) => (
-        <li key={instrument.id ?? instrument.name}>{instrument.name}</li>
-      ))}
-    </ul>
-  );
-}
-
 function App() {
-  const [instruments, setInstruments] = useState<Instrument[]>([]);
-  const [loadingInstruments, setLoadingInstruments] = useState(false);
-  const [instrumentsError, setInstrumentsError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Skip if Supabase is not configured
-    if (!supabase) {
-      console.warn('Supabase not configured. Skipping instruments fetch.');
-      return;
-    }
-
-    let ignore = false;
-
-    const loadInstruments = async () => {
-      try {
-        setLoadingInstruments(true);
-        const { data, error } = await supabase.from("instruments").select();
-
-        if (ignore) return;
-        if (error) {
-          console.error('Supabase fetch error:', error);
-          setInstrumentsError(error.message);
-          setInstruments([]);
-        } else {
-          setInstruments(data ?? []);
-          setInstrumentsError(null);
-        }
-      } catch (err) {
-        if (!ignore) {
-          console.error('Unexpected error loading instruments:', err);
-          setInstrumentsError(err instanceof Error ? err.message : 'Unknown error');
-          setInstruments([]);
-        }
-      } finally {
-        if (!ignore) {
-          setLoadingInstruments(false);
-        }
-      }
-    };
-
-    loadInstruments();
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/profil" element={<About />} /> */}
           <Route path="/profil-kelurahan" element={<ProfileKelurahan />} />
           <Route path="/pemerintahan" element={<Pemerintahan />} />
           <Route path="/infografis" element={<Infografis />} />
-          <Route path="/berita" element={<News />} />
           <Route path="/galeri" element={<Gallery />} />
-          <Route
-            path="/_debug/instruments"
-            element={
-              <InstrumentsList
-                instruments={instruments}
-                loading={loadingInstruments}
-                error={instrumentsError}
-              />
-            }
-          />
         </Route>
 
-        {/* Admin Routes */}
+        {/* Admin Login Routes */}
         <Route path="/admin" element={<LoginAdmin />} />
+        <Route path="/admin/login" element={<LoginAdmin />} />
+
+        {/* Protected Admin Routes */}
+        <Route 
+          path="/admin/dashboard" 
+          element={<ProtectedRoute><DashboardAdmin /></ProtectedRoute>} 
+        />
+        {/* Manajemen Penduduk */}
+        <Route 
+          path="/admin/manajemen-penduduk" 
+          element={<ProtectedRoute><ManajemenPenduduk /></ProtectedRoute>} 
+        />
+
         <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardAdmin />
-            </ProtectedRoute>
-          }
+          path="/admin/edit-penduduk/:id"
+          element={<ProtectedRoute><EditPenduduk /></ProtectedRoute>}
+        />
+
+        {/* Manajemen Galeri */}
+        <Route 
+          path="/admin/manajemen-galeri" 
+          element={<ProtectedRoute><ManajemenGaleri /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/tambah-galeri" 
+          element={<ProtectedRoute><TambahGaleri /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/edit-galeri/:id" 
+          element={<ProtectedRoute><EditGaleri /></ProtectedRoute>} 
+        />
+
+        {/* Manajemen Fasilitas */}
+        <Route 
+          path="/admin/manajemen-fasilitas" 
+          element={<ProtectedRoute><ManajemenFasilitas /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/tambah-fasilitas" 
+          element={<ProtectedRoute><TambahFasilitas /></ProtectedRoute>} 
+        />
+
+        {/* Manajemen Wilayah Administratif */}
+        <Route 
+          path="/admin/manajemen-wilayah" 
+          element={<ProtectedRoute><ManajemenWilayah /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/tambah-wilayah" 
+          element={<ProtectedRoute><TambahWilayah /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/edit-wilayah/:id" 
+          element={<ProtectedRoute><TambahWilayah /></ProtectedRoute>} 
+        />
+
+        {/* Manajemen Struktur Organisasi */}
+        <Route 
+          path="/admin/manajemen-struktur" 
+          element={<ProtectedRoute><ManajemenStruktur /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/tambah-struktur" 
+          element={<ProtectedRoute><TambahStruktur /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/edit-struktur/:id" 
+          element={<ProtectedRoute><TambahStruktur /></ProtectedRoute>} 
+        />
+
+        {/* Manajemen Aset */}
+        <Route 
+          path="/admin/manajemen-aset" 
+          element={<ProtectedRoute><ManajemenAset /></ProtectedRoute>} 
         />
       </Routes>
     </Router>

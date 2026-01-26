@@ -83,52 +83,26 @@ const Navbar = () => {
               >
                 Beranda
               </button>
-              {/* Profil Dropdown */}
-              <div className="relative group">
-                <button
-                  className={`${
-                    isHomepage && !isScrolled
-                      ? linkClass(isActive('/profil-kelurahan') || isActive('/pemerintahan'), false)
-                      : linkClass(isActive('/profil-kelurahan') || isActive('/pemerintahan'), true)
-                  } flex items-center gap-2`}
-                >
-                  Profil
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                  </svg>
-                </button>
-                {/* Dropdown Menu */}
-                <div className={`absolute left-0 mt-0 w-48 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 ${
-                  isHomepage && !isScrolled ? 'bg-gray-600' : 'bg-white border border-gray-200'
-                }`}>
-                  <button
-                    onClick={() => {
-                      navigate('/profil-kelurahan');
-                      setIsProfileOpen(false);
-                    }}
-                    className={`block w-full text-left ${
-                      isHomepage && !isScrolled
-                        ? linkClass(isActive('/profil-kelurahan'), false)
-                        : linkClass(isActive('/profil-kelurahan'), true)
-                    }`}
-                  >
-                    Profil Kelurahan
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate('/pemerintahan');
-                      setIsProfileOpen(false);
-                    }}
-                    className={`block w-full text-left ${
-                      isHomepage && !isScrolled
-                        ? linkClass(isActive('/pemerintahan'), false)
-                        : linkClass(isActive('/pemerintahan'), true)
-                    }`}
-                  >
-                    Pemerintahan
-                  </button>
-                </div>
-              </div>
+              <button
+                onClick={() => navigate('/profil-kelurahan')}
+                className={`${
+                  isHomepage && !isScrolled
+                    ? linkClass(isActive('/profil-kelurahan'), false)
+                    : linkClass(isActive('/profil-kelurahan'), true)
+                }`}
+              >
+                Profil Kelurahan
+              </button>
+              <button
+                onClick={() => navigate('/pemerintahan')}
+                className={`${
+                  isHomepage && !isScrolled
+                    ? linkClass(isActive('/pemerintahan'), false)
+                    : linkClass(isActive('/pemerintahan'), true)
+                }`}
+              >
+                Pemerintahan
+              </button>
               <button
                 onClick={() => navigate('/infografis')}
                 className={`${
@@ -148,26 +122,6 @@ const Navbar = () => {
                 }`}
               >
                 Galeri
-              </button>
-              <button
-                onClick={() => navigate('/berita')}
-                className={`${
-                  isHomepage && !isScrolled
-                    ? linkClass(isActive('/berita'), false)
-                    : linkClass(isActive('/berita'), true)
-                }`}
-              >
-                Berita
-              </button>
-              <button
-                onClick={() => navigate('/umkm')}
-                className={`${
-                  isHomepage && !isScrolled
-                    ? linkClass(isActive('/umkm'), false)
-                    : linkClass(isActive('/umkm'), true)
-                }`}
-              >
-                UMKM
               </button>
             </div>
           </div>

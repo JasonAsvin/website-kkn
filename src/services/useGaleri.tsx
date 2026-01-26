@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 
 export type GalleryItemFromDB = {
-  id: string;
+  id: number;
   judul: string;
   url: string;
-  deskripsi: string;
+  ukuran_file: string;
   created_at: string;
 };
 

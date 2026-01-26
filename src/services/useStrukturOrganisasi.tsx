@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 
-export type StrukturOrganisasi = {
+export interface StrukturOrganisasi {
   id: string;
-  url: string;
-  keterangan?: string;
-  created_at: string;
-};
+  nama: string;
+  jabatan: string;
+  foto_url: string | null;
+  nomor_nip: string | null;
+  parent_id: string | null;
+  urutan: number;
+}
 
-type UseStrukturOrganisasiReturn = {
-  data: StrukturOrganisasi | null;
+interface UseStrukturOrganisasiReturn {
+  data: StrukturOrganisasi[];
   loading: boolean;
   error: string | null;
-};
+}
 
 export const useStrukturOrganisasi = (): UseStrukturOrganisasiReturn => {
-  const [data, setData] = useState<StrukturOrganisasi | null>(null);
+  const [data, setData] = useState<StrukturOrganisasi[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,19 +33,18 @@ export const useStrukturOrganisasi = (): UseStrukturOrganisasiReturn => {
 
         const { data: strukturData, error: strukturError } = await supabase
           .from('struktur_organisasi')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
+          .select('id, nama, jabatan, foto_url, nomor_nip, parent_id, urutan')
+          .order('parent_id', { ascending: true, nullsFirst: true })
+          .order('urutan', { ascending: true });
 
         if (ignore) return;
 
         if (strukturError) {
           console.error('Struktur organisasi fetch error:', strukturError);
           setError(strukturError.message);
-          setData(null);
+          setData([]);
         } else {
-          setData((strukturData as StrukturOrganisasi) || null);
+          setData((strukturData as StrukturOrganisasi[]) || []);
           setError(null);
         }
       } catch (err) {
@@ -50,7 +52,7 @@ export const useStrukturOrganisasi = (): UseStrukturOrganisasiReturn => {
           const message = err instanceof Error ? err.message : 'Failed to fetch struktur organisasi';
           console.error('Struktur organisasi error:', message);
           setError(message);
-          setData(null);
+          setData([]);
         }
       } finally {
         if (!ignore) {
