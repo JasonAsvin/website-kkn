@@ -44,7 +44,6 @@ export default function DashboardAdmin() {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState<string>('dashboard');
   const [data, setData] = useState<Record<SectionKey, DataRecord[]>>(emptyData);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const stats = useMemo(() => {
@@ -61,13 +60,11 @@ export default function DashboardAdmin() {
     let isMounted = true;
 
     const fetchData = async () => {
-      setLoading(true);
       setError(null);
 
       if (!supabase) {
         // Supabase not configured, use fallback so UI is populated.
         setData(fallbackData);
-        setLoading(false);
         return;
       }
 
@@ -102,8 +99,6 @@ export default function DashboardAdmin() {
         const message = err instanceof Error ? err.message : 'Gagal memuat data dashboard.';
         setError(message);
         setData(fallbackData);
-      } finally {
-        if (isMounted) setLoading(false);
       }
     };
 

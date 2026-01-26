@@ -6,7 +6,7 @@ import { useKepalaKelurahanImage } from '../hooks/useKepalaKelurahanImage';
 const Home = () => {
   const { wilayahTotal, rtList, loading: wilayahLoading } = useWilayahAdministratif();
   const { data: populationData, loading: populationLoading } = usePopulationByLingkungan();
-  const { kepalaUrl, loading: kepalaLoading, error: kepalaError } = useKepalaKelurahanImage();
+  const { kepalaUrl, loading: kepalaLoading } = useKepalaKelurahanImage();
 
   // Calculate totals
   const totalPenduduk = populationData.reduce((sum, item) => sum + (item.jumlah_penduduk || 0), 0);

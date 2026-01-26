@@ -4,14 +4,13 @@ import { useWilayahAdministratif } from '../services/useWilayahAdministratif';
 import { useFasilitas } from '../services/useFasilitas';
 import { categorizeSchools } from '../services/categorizeSchools';
 import { supabase } from '../services/supabase';
-import { Input } from '../components/common/Input';
 import { Modal } from '../components/common/Modal';
 import { Accordion } from '../components/common/Accordion';
 
 const Infografis = () => {
   // Custom hooks for data fetching
   const { data: populationByLingkungan, loading: loadingByLingkungan, error: errorByLingkungan } = usePopulationByLingkungan();
-  const { wilayahTotal, rtList, loading: loadingWilayah, error: wilayahError } = useWilayahAdministratif();
+  const { rtList, loading: loadingWilayah, error: wilayahError } = useWilayahAdministratif();
   const { data: fasilitasData, loading: loadingFasilitas, error: fasilitasError } = useFasilitas();
 
   const wilayahImageUrl = supabase?.storage

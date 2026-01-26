@@ -18,7 +18,7 @@ export default function ManajemenWilayah() {
 	const [search, setSearch] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedLingkungan, setSelectedLingkungan] = useState<string>('all');
+	const [selectedLingkungan] = useState<string>('all');
 	const [expandedLingkungan, setExpandedLingkungan] = useState<Set<string>>(new Set());
 	const [confirmState, setConfirmState] = useState({
 		open: false,
@@ -83,10 +83,7 @@ export default function ManajemenWilayah() {
 		return groups;
 	}, [items]);
 
-	// Get unique lingkungan for filter
-	const lingkunganOptions = useMemo(() => {
-		return Array.from(new Set(items.map(i => i.nama_lingkungan))).filter(Boolean).sort();
-	}, [items]);
+
 
 	// Stats
 	const stats: StatCard[] = useMemo(() => {
@@ -152,13 +149,7 @@ export default function ManajemenWilayah() {
 		});
 	};
 
-	const expandAll = () => {
-		setExpandedLingkungan(new Set(Array.from(filteredGroups.keys())));
-	};
 
-	const collapseAll = () => {
-		setExpandedLingkungan(new Set());
-	};
 
 	const handleDeleteRT = async (id: string, namaRT: string) => {
 		setConfirmState({
