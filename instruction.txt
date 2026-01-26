@@ -1,4 +1,1 @@
-It's time to do the "Beranda" (Homepage), can you
-- move the "Sambutan Kepala Kelurahan" section to below the "Welcome..."
-- link the sum of "Ketua RT", sum of "Penduduk", sum of "Lingkungan", sum of "RT" & "RW" to the "Profil Kelurahan Baju Bodoa" section
-- link to the other pages according to what the website has "Profil Kelurahan", "Pemerintahan", "Infografis", "Galeri" and properly ("Jelajahi Kelurahan" section) 
+Test

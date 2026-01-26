@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -170,67 +169,45 @@ const Navbar = () => {
             isHomepage && !isScrolled ? 'bg-gray-700' : 'bg-white border-t border-gray-200'
           }`}>
             <button
-                  onClick={() => {
-                    navigate('/');
-                    setIsOpen(false);
-                    scrollToSection('home');
-                  }}
-                  className={`block w-full text-left ${
-                    isHomepage && !isScrolled
-                      ? linkClass(isActive('/'), false)
-                      : linkClass(isActive('/'), true)
-                  }`}
+              onClick={() => {
+                navigate('/');
+                setIsOpen(false);
+                scrollToSection('home');
+              }}
+              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
+                isHomepage && !isScrolled
+                  ? linkClass(isActive('/'), false)
+                  : linkClass(isActive('/'), true)
+              }`}
             >
-              Home
+              Beranda
             </button>
-            {/* Mobile Profil Dropdown */}
-            <div>
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left flex items-center justify-between ${
-                      isHomepage && !isScrolled
-                        ? 'text-white hover:bg-gray-600'
-                        : 'text-gray-800 hover:bg-gray-100'
-                    }`}
-              >
-                Profil
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </button>
-              {isProfileOpen && (
-                <div className="pl-4 space-y-1">
-                  <button
-                    onClick={() => {
-                      navigate('/profil-kelurahan');
-                      setIsProfileOpen(false);
-                      setIsOpen(false);
-                    }}
-                    className={`block px-3 py-2 rounded-md text-sm w-full text-left ${
-                      isHomepage && !isScrolled
-                        ? linkClass(isActive('/profil-kelurahan'), false)
-                        : linkClass(isActive('/profil-kelurahan'), true)
-                    }`}
-                  >
-                    Profil Kelurahan
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigate('/pemerintahan');
-                      setIsProfileOpen(false);
-                      setIsOpen(false);
-                    }}
-                    className={`block px-3 py-2 rounded-md text-sm w-full text-left ${
-                      isHomepage && !isScrolled
-                        ? linkClass(isActive('/pemerintahan'), false)
-                        : linkClass(isActive('/pemerintahan'), true)
-                    }`}
-                  >
-                    Pemerintahan
-                  </button>
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => {
+                navigate('/profil-kelurahan');
+                setIsOpen(false);
+              }}
+              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
+                isHomepage && !isScrolled
+                  ? linkClass(isActive('/profil-kelurahan'), false)
+                  : linkClass(isActive('/profil-kelurahan'), true)
+              }`}
+            >
+              Profil Kelurahan
+            </button>
+            <button
+              onClick={() => {
+                navigate('/pemerintahan');
+                setIsOpen(false);
+              }}
+              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
+                isHomepage && !isScrolled
+                  ? linkClass(isActive('/pemerintahan'), false)
+                  : linkClass(isActive('/pemerintahan'), true)
+              }`}
+            >
+              Pemerintahan
+            </button>
             <button
               onClick={() => {
                 navigate('/infografis');
@@ -256,32 +233,6 @@ const Navbar = () => {
               }`}
             >
               Galeri
-            </button>
-            <button
-              onClick={() => {
-                navigate('/berita');
-                setIsOpen(false);
-              }}
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                isHomepage && !isScrolled
-                  ? linkClass(isActive('/berita'), false)
-                  : linkClass(isActive('/berita'), true)
-              }`}
-            >
-              Berita
-            </button>
-            <button
-              onClick={() => {
-                navigate('/umkm');
-                setIsOpen(false);
-              }}
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                isHomepage && !isScrolled
-                  ? linkClass(isActive('/umkm'), false)
-                  : linkClass(isActive('/umkm'), true)
-              }`}
-            >
-              UMKM
             </button>
           </div>
         </div>
