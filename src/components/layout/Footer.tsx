@@ -26,10 +26,11 @@ const Footer = () => {
                   }}
                 />
               </div>
-              <h3 className="text-2xl font-bold uppercase">Kelurahan Baju Bodoa</h3>
+              <h3 className="text-left text-2xl font-bold uppercase">Kelurahan Baju Bodoa</h3>
             </div>
             <p className="text-gray-200 text-sm mb-6 leading-relaxed">
-              Website Resmi Pemerintah Kelurahan Baju Bodoa, Kecamatan Maros, Kabupaten Maros
+              Website Resmi Kelurahan Baju Bodoa ini bertujuan untuk menjadi
+              sarana informasi, pelayanan, serta transparansi kegiatan pemerintahan kelurahan.
             </p>
           </div>
 

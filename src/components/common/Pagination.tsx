@@ -22,7 +22,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="sticky bottom-0 bg-gradient-to-t from-white via-white to-white/95 border-t border-gray-200 shadow-lg py-4 flex justify-center items-center gap-2">
+    <div className="bg-gradient-to-t from-white via-white to-white/95 border-gray-200 py-4 flex justify-center items-center gap-2">
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}

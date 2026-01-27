@@ -81,10 +81,11 @@ const Home = () => {
                 Assalamu'alaikum Warahmatullahi Wabarakatuh,
               </p>
               <p className="text-gray-600 leading-relaxed text-justify">
-                Selamat datang di Website Resmi Kelurahan Baju Bodoa. Website ini
-                menjadi sarana informasi, pelayanan, serta transparansi kegiatan
-                pemerintahan kelurahan. Semoga website ini dapat bermanfaat dan
-                menjadi jembatan komunikasi antara pemerintah dan masyarakat.
+                Selamat datang di Website Resmi Kelurahan Baju Bodoa.
+                Website ini diharapkan dapat menjadi sarana untuk mempermudah akses data kependudukan, fasilitas umum,
+                dan transparansi kegiatan wilayah bagi seluruh warga.
+                
+                Semoga website ini dapat bermanfaat dan menjadi jembatan komunikasi antara pemerintah dan masyarakat.
               </p>
             </div>
           </div>

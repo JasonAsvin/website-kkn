@@ -111,11 +111,13 @@ const Gallery = () => {
 
         {/* Pagination */}
         {!loading && galleryItems.length > 0 && (
+          <div className="mt- pb-12 flex justify-center">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
+          </div>
         )}
       </div>
     </div>
