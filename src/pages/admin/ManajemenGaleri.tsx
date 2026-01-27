@@ -245,13 +245,6 @@ export default function ManajemenGaleri() {
 												</td>
 												<td className="px-4 py-3 align-middle text-right space-x-2 flex justify-end">
 													<button 
-														onClick={() => navigate(`/admin/manajemen-galeri`)}
-														className="h-8 w-8 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition cursor-pointer text-emerald-600" 
-														title="Download"
-													>
-														⬇
-													</button>
-													<button 
 														onClick={() => navigate(`/admin/edit-galeri/${item.id}`)}
 														className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-xs" 
 														title="Edit"
