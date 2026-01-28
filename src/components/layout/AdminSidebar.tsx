@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../services/supabase';
 
 type NavItem = {
   key: string;
@@ -10,7 +11,6 @@ type NavItem = {
 type AdminSidebarProps = {
   activeKey: string;
   onSelect: (key: string) => void;
-  onLogout: () => void;
 };
 
 const navItems: NavItem[] = [
@@ -23,13 +23,21 @@ const navItems: NavItem[] = [
   { key: 'aset', label: 'Manajemen Aset', icon: '🖼️', path: '/admin/manajemen-aset' },
 ];
 
-export default function AdminSidebar({ activeKey, onSelect, onLogout }: AdminSidebarProps) {
+export default function AdminSidebar({ activeKey, onSelect }: AdminSidebarProps) {
   const navigate = useNavigate();
 
   const handleNavClick = (key: string, path: string) => {
     onSelect(key);
     navigate(path);
   };
+
+const handleLogout = async () => {
+  if (supabase) {
+    await supabase.auth.signOut();
+  }
+  localStorage.removeItem('isAuthenticated');
+  navigate('/admin');
+};
 
   return (
     <aside className="w-64 bg-[#1e293b] text-white flex flex-col border-r border-gray-800 h-screen sticky top-0">
@@ -73,7 +81,7 @@ export default function AdminSidebar({ activeKey, onSelect, onLogout }: AdminSid
       {/* Logout */}
       <div className="px-3 pb-4 border-t border-white/10 pt-4 flex-shrink-0">
         <button
-          onClick={onLogout}
+          onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-red-500/20 hover:text-red-400 transition"
         >
           <span className="text-lg">🚪</span>
