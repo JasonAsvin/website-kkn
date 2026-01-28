@@ -22,8 +22,11 @@
             }
             if (!isMounted) return;
             const hasSession = Boolean(data?.session);
-            const localFlag = localStorage.getItem('isAuthenticated') === 'true';
-            setIsAuthed(hasSession || localFlag);
+            setIsAuthed(hasSession);
+  
+            if (!hasSession) {
+              localStorage.removeItem('isAuthenticated');
+            }
           } else {
             const localFlag = localStorage.getItem('isAuthenticated') === 'true';
             if (isMounted) setIsAuthed(localFlag);
@@ -42,7 +45,7 @@
     if (checking) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-gray-600">Checking authentication...</div>
+          <div className="text-gray-600">Memverifikasi akses...</div>
         </div>
       );
     }
