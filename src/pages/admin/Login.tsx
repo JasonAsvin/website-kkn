@@ -104,20 +104,6 @@ export default function LoginAdmin() {
                 required
               />
             </div>
-
-            <div className="flex items-center justify-between text-sm text-gray-700">
-              <label className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 text-teal-600 border-gray-300 rounded focus:ring-teal-600"
-                />
-                <span>Ingat saya</span>
-              </label>
-              <button type="button" className="text-teal-600 hover:underline text-xs">
-                Lupa password?
-              </button>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
