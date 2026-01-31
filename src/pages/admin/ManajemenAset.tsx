@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AdminSidebar from '../../components/layout/AdminSidebar';
 import { supabase } from '../../services/supabase';
 
@@ -15,14 +14,13 @@ type Asset = {
 };
 
 export default function ManajemenAset() {
-	const navigate = useNavigate();
 	const [activeNav, setActiveNav] = useState('aset');
 	const [assets, setAssets] = useState<Asset[]>([
 		{
-			id: 'bagan-struktur',
-			name: 'Bagan Struktur Organisasi',
-			description: 'Tampil di halaman Pemerintahan',
-			bucketPath: 'pemerintahan/Bagan_Struktur_Baju_Bodoa.png',
+			id: 'kepala-kelurahan',
+			name: 'Foto Kepala Kelurahan',
+			description: 'Tampil di halaman Beranda (Homepage)',
+			bucketPath: 'pemerintahan/Kepala_Kelurahan.png',
 			currentUrl: '',
 			uploadingFile: null,
 			uploadingProgress: 0,
@@ -39,15 +37,27 @@ export default function ManajemenAset() {
 			uploadingStatus: 'idle',
 		},
 		{
-			id: 'kepala-kelurahan',
-			name: 'Foto Kepala Kelurahan',
-			description: 'Tampil di halaman Beranda (Homepage)',
-			bucketPath: 'pemerintahan/Kepala_Kelurahan.png',
+			id: 'bagan-struktur',
+			name: 'Bagan Struktur Organisasi',
+			description: 'Tampil di halaman Pemerintahan',
+			bucketPath: 'pemerintahan/Bagan_Struktur_Baju_Bodoa.png',
 			currentUrl: '',
 			uploadingFile: null,
 			uploadingProgress: 0,
 			uploadingStatus: 'idle',
 		},
+		{
+			id: 'bagan-organisasi',
+			name: 'Bagan Organisasi',
+			description: 'Tampil di detail modal halaman Pemerintahan',
+			bucketPath: 'pemerintahan/Bagan_Organisasi.png',
+			currentUrl: '',
+			uploadingFile: null,
+			uploadingProgress: 0,
+			uploadingStatus: 'idle',
+		},
+
+
 	]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
