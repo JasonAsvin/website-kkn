@@ -26,17 +26,6 @@ export default function ManajemenFasilitas() {
 		onConfirm: () => {},
 	});
 
-	const handleLogout = async () => {
-		try {
-			if (supabase) {
-				await supabase.auth.signOut();
-			}
-		} finally {
-			localStorage.removeItem('isAuthenticated');
-			navigate('/admin/login');
-		}
-	};
-
 	// Group and filter facilities by category
 	const facilitiesByCategory = useMemo(() => {
 		const grouped: Record<string, Facility[]> = {
@@ -120,7 +109,7 @@ export default function ManajemenFasilitas() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-900">
 			<div className="flex min-h-screen">
-				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} onLogout={handleLogout} />
+				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} />
 
 				<div className="flex-1 flex flex-col">
 					{/* Top bar */}

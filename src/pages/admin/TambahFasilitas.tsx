@@ -13,17 +13,6 @@ export default function TambahFasilitas() {
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	const handleLogout = async () => {
-		try {
-			if (supabase) {
-				await supabase.auth.signOut();
-			}
-		} finally {
-			localStorage.removeItem('isAuthenticated');
-			navigate('/admin/login');
-		}
-	};
-
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
@@ -72,7 +61,7 @@ export default function TambahFasilitas() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-900">
 			<div className="flex min-h-screen">
-				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} onLogout={handleLogout} />
+				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} />
 
 				<div className="flex-1 flex flex-col">
 					{/* Top bar */}

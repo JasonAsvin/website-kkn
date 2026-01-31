@@ -63,17 +63,6 @@ export default function TambahStruktur() {
 		}
 	};
 
-	const handleLogout = async () => {
-		try {
-			if (supabase) {
-				await supabase.auth.signOut();
-			}
-		} finally {
-			localStorage.removeItem('isAuthenticated');
-			navigate('/admin/login');
-		}
-	};
-
 	const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
@@ -193,7 +182,7 @@ export default function TambahStruktur() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-900">
 			<div className="flex min-h-screen">
-				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} onLogout={handleLogout} />
+				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} />
 
 				<div className="flex-1 flex flex-col">
 					{/* Top bar */}

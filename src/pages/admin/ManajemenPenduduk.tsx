@@ -17,17 +17,6 @@ export default function ManajemenPenduduk() {
 		onConfirm: () => {},
 	});
 
-	const handleLogout = async () => {
-		try {
-			if (supabase) {
-				await supabase.auth.signOut();
-			}
-		} finally {
-			localStorage.removeItem('isAuthenticated');
-			navigate('/admin/login');
-		}
-	};
-
 	const handleDeletePenduduk = async (id: string | undefined, namaLingkungan: string) => {
 		if (!id) return;
 
@@ -90,7 +79,7 @@ export default function ManajemenPenduduk() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-900">
 			<div className="flex min-h-screen">
-				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} onLogout={handleLogout} />
+				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} />
 
 				<div className="flex-1 flex flex-col">
 					{/* Top bar */}

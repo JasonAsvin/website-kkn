@@ -76,17 +76,6 @@ export default function ManajemenGaleri() {
 		}
 	};
 
-	const handleLogout = async () => {
-		try {
-			if (supabase) {
-				await supabase.auth.signOut();
-			}
-		} finally {
-			localStorage.removeItem('isAuthenticated');
-			navigate('/admin/login');
-		}
-	};
-
 	// Pagination logic
 	const totalPages = Math.ceil(items.length / itemsPerPage);
 	const startIndex = (currentPage - 1) * itemsPerPage;
@@ -129,7 +118,7 @@ export default function ManajemenGaleri() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-900">
 			<div className="flex min-h-screen">
-				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} onLogout={handleLogout} />
+				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} />
 
 				<div className="flex-1 flex flex-col">
 					{/* Top bar */}

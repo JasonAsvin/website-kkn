@@ -57,17 +57,6 @@ export default function ManajemenWilayah() {
 		}
 	};
 
-	const handleLogout = async () => {
-		try {
-			if (supabase) {
-				await supabase.auth.signOut();
-			}
-		} finally {
-			localStorage.removeItem('isAuthenticated');
-			navigate('/admin/login');
-		}
-	};
-
     const LINGKUNGAN_ORDER = ["Kassikebo", "Betang", "Masembo"];
 
 	// Group data by Lingkungan
@@ -181,7 +170,7 @@ export default function ManajemenWilayah() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-900">
 			<div className="flex min-h-screen">
-				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} onLogout={handleLogout} />
+				<AdminSidebar activeKey={activeNav} onSelect={setActiveNav} />
 
 				<div className="flex-1 flex flex-col">
 					{/* Top bar */}
