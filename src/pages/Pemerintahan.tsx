@@ -3,8 +3,6 @@ import { useStrukturOrganisasi } from '../services/useStrukturOrganisasi';
 import { useStrukturImage } from '../hooks/useStrukturImage';
 import { useBaganOrganisasiImage } from '../hooks/useBaganOrganisasiImage';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
-// import { useBuildTree } from '../services/useBuildTree';
-// import { TreeNodeComponent } from '../components/common/TreeNodeComponent';
 import { VisionMissionMotto } from '../components/common/VisionMissionMotto';
 import { Modal } from '../components/common/Modal';
 
@@ -68,7 +66,6 @@ const Pemerintahan = () => {
   const { strukturUrl, loading: strukturLoading, error: strukturError } = useStrukturImage();
   const { baganUrl, loading: baganLoading, error: baganError } = useBaganOrganisasiImage();
   const { data: strukturData, loading: strukturDataLoading, error: strukturDataError } = useStrukturOrganisasi();
-  // const treeData = useBuildTree(strukturData);
 
   useLockBodyScroll(isModalOpen || showDetailModal);
 
@@ -190,13 +187,6 @@ const Pemerintahan = () => {
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <h3 className="text-2xl font-bold text-gray-900">Struktur Organisasi</h3>
-              <button
-                className="text-gray-500 hover:text-gray-800"
-                onClick={() => setShowDetailModal(false)}
-                aria-label="Tutup"
-              >
-                ✕
-              </button>
             </div>
 
             <div className="px-6 py-6 max-h-[80vh] overflow-y-auto space-y-8">
