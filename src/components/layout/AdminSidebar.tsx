@@ -15,6 +15,7 @@ type AdminSidebarProps = {
 
 const navItems: NavItem[] = [
   { key: 'dashboard', label: 'Dashboard', icon: '🏠', path: '/admin/dashboard' },
+  { key: 'konten-web', label: 'Konten Web', icon: '📝', path: '/admin/manajemen-konten' },
   { key: 'struktur', label: 'Struktur Organisasi', icon: '🏢', path: '/admin/manajemen-struktur' },
   { key: 'wilayah', label: 'Wilayah Administratif', icon: '🗺️', path: '/admin/manajemen-wilayah' },
   { key: 'penduduk', label: 'Penduduk', icon: '👥', path: '/admin/manajemen-penduduk' },

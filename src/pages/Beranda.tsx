@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import { useWilayahAdministratif } from '../services/useWilayahAdministratif';
 import { usePopulationByLingkungan } from '../services/usePopulationByLingkungan';
 import { useKepalaKelurahanImage } from '../hooks/useKepalaKelurahanImage';
+import { useKontenWeb } from '../services/useKontenWeb';
 
 const Home = () => {
   const { wilayahTotal, rtList, loading: wilayahLoading } = useWilayahAdministratif();
   const { data: populationData, loading: populationLoading } = usePopulationByLingkungan();
   const { kepalaUrl, loading: kepalaLoading } = useKepalaKelurahanImage();
+  const { data: kontenWeb } = useKontenWeb();
 
   // Calculate totals
   const totalPenduduk = populationData.reduce((sum, item) => sum + (item.jumlah_penduduk || 0), 0);
@@ -80,13 +82,13 @@ const Home = () => {
               <p className="text-gray-700 mb-3">
                 Assalamu'alaikum Warahmatullahi Wabarakatuh,
               </p>
-              <p className="text-gray-600 leading-relaxed text-justify">
-                Selamat datang di Website Resmi Kelurahan Baju Bodoa.
-                Website ini diharapkan dapat menjadi sarana untuk mempermudah akses data kependudukan, fasilitas umum,
-                dan transparansi kegiatan wilayah bagi seluruh warga.
-                
-                Semoga website ini dapat bermanfaat dan menjadi jembatan komunikasi antara pemerintah dan masyarakat.
-              </p>
+              {kontenWeb?.teks_sambutan ? (
+                <p className="text-gray-600 leading-relaxed text-justify whitespace-pre-line">
+                  {kontenWeb.teks_sambutan}
+                </p>
+              ) : (
+                <p className="text-gray-500 italic">Sambutan belum tersedia</p>
+              )}
             </div>
           </div>
         </div>

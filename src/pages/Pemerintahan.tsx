@@ -3,6 +3,7 @@ import { useStrukturOrganisasi } from '../services/useStrukturOrganisasi';
 import { useStrukturImage } from '../hooks/useStrukturImage';
 import { useBaganOrganisasiImage } from '../hooks/useBaganOrganisasiImage';
 import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
+import { useKontenWeb } from '../services/useKontenWeb';
 import { VisionMissionMotto } from '../components/common/VisionMissionMotto';
 import { Modal } from '../components/common/Modal';
 
@@ -66,6 +67,11 @@ const Pemerintahan = () => {
   const { strukturUrl, loading: strukturLoading, error: strukturError } = useStrukturImage();
   const { baganUrl, loading: baganLoading, error: baganError } = useBaganOrganisasiImage();
   const { data: strukturData, loading: strukturDataLoading, error: strukturDataError } = useStrukturOrganisasi();
+  const { data: kontenWeb } = useKontenWeb();
+
+  const visiText = kontenWeb?.teks_visi?.trim() || '';
+  const misiText = kontenWeb?.teks_misi?.trim() || '';
+  const mottoText = kontenWeb?.teks_motto?.trim() || '';
 
   useLockBodyScroll(isModalOpen || showDetailModal);
 
@@ -84,26 +90,31 @@ const Pemerintahan = () => {
         {/* Content */}
         <div className="space-y-8">
           {/* Visi */}
-          <VisionMissionMotto
-            type="vision"
-            title="Visi"
-            content="Terwujudnya masyarakat Kelurahan Baju Bodoa sebagai masyarakat yang bermartabat, untuk mencapai masyarakat yang makmur dan sejahtera"
-          />
+          {visiText && (
+            <VisionMissionMotto
+              type="vision"
+              title="Visi"
+              content={visiText}
+            />
+          )}
 
           {/* Misi */}
-          <VisionMissionMotto
-            type="mission"
-            title="Misi"
-            content="Melibatkan masyarakat berpartisipasi dalam hal pembangunan sosial dan ekonomi, serta meningkatkan disiplin dan etos kerja aparat kelurahan dalam memberikan pelayanan prima kepada masyarakat"
-          />
+          {misiText && (
+            <VisionMissionMotto
+              type="mission"
+              title="Misi"
+              content={misiText}
+            />
+          )}
 
           {/* Motto */}
-          <VisionMissionMotto
-            type="motto"
-            title="Motto"
-            content='Kami melayani anda dengan "GERCEP"'
-            subtitle="Gerakan Cepat dan Akurat"
-          />
+          {mottoText && (
+            <VisionMissionMotto
+              type="motto"
+              title="Motto"
+              content={mottoText}
+            />
+          )}
 
           {/* Struktur Organisasi */}
           <div className="bg-white rounded-lg shadow-md p-8">

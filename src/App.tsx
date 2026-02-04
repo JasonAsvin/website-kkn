@@ -20,6 +20,7 @@ import TambahStruktur from './pages/admin/TambahStruktur';
 import ManajemenWilayah from './pages/admin/ManajemenWilayah';
 import TambahWilayah from './pages/admin/TambahWilayah';
 import ManajemenAset from './pages/admin/ManajemenAset';
+import ManajemenKontenWeb from './pages/admin/ManajemenKontenWeb';
 import './App.css';
 
 function App() {
@@ -111,6 +112,12 @@ function App() {
         <Route 
           path="/admin/manajemen-aset" 
           element={<ProtectedRoute><ManajemenAset /></ProtectedRoute>} 
+        />
+
+        {/* Manajemen Konten Web */}
+        <Route 
+          path="/admin/manajemen-konten" 
+          element={<ProtectedRoute><ManajemenKontenWeb /></ProtectedRoute>} 
         />
       </Routes>
     </Router>
