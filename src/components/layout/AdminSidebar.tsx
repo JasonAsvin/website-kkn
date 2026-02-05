@@ -15,13 +15,13 @@ type AdminSidebarProps = {
 
 const navItems: NavItem[] = [
   { key: 'dashboard', label: 'Dashboard', icon: '🏠', path: '/admin/dashboard' },
-  { key: 'konten-web', label: 'Konten Web', icon: '📝', path: '/admin/manajemen-konten' },
   { key: 'struktur', label: 'Struktur Organisasi', icon: '🏢', path: '/admin/manajemen-struktur' },
   { key: 'wilayah', label: 'Wilayah Administratif', icon: '🗺️', path: '/admin/manajemen-wilayah' },
   { key: 'penduduk', label: 'Penduduk', icon: '👥', path: '/admin/manajemen-penduduk' },
   { key: 'fasilitas', label: 'Fasilitas', icon: '🏛️', path: '/admin/manajemen-fasilitas' },
   { key: 'galeri', label: 'Galeri', icon: '🖼️', path: '/admin/manajemen-galeri' },
   { key: 'aset', label: 'Manajemen Aset', icon: '🖼️', path: '/admin/manajemen-aset' },
+  { key: 'konten-web', label: 'Konten Web', icon: '📝', path: '/admin/manajemen-konten' },
 ];
 
 export default function AdminSidebar({ activeKey, onSelect }: AdminSidebarProps) {
