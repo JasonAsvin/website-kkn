@@ -3,12 +3,17 @@ import { useWilayahAdministratif } from '../services/useWilayahAdministratif';
 import { usePopulationByLingkungan } from '../services/usePopulationByLingkungan';
 import { useKepalaKelurahanImage } from '../hooks/useKepalaKelurahanImage';
 import { useKontenWeb } from '../services/useKontenWeb';
+import { useStrukturOrganisasi } from '../services/useStrukturOrganisasi';
 
 const Home = () => {
   const { wilayahTotal, rtList, loading: wilayahLoading } = useWilayahAdministratif();
   const { data: populationData, loading: populationLoading } = usePopulationByLingkungan();
   const { kepalaUrl, loading: kepalaLoading } = useKepalaKelurahanImage();
   const { data: kontenWeb } = useKontenWeb();
+  const { data: strukturData, loading: strukturLoading } = useStrukturOrganisasi();
+
+  // Find Lurah from struktur organisasi
+  const lurah = strukturData.find(person => person.jabatan === 'Lurah');
 
   // Calculate totals
   const totalPenduduk = populationData.reduce((sum, item) => sum + (item.jumlah_penduduk || 0), 0);
@@ -74,7 +79,7 @@ const Home = () => {
 
             <div className="max-w-3xl text-center lg:text-left">
               <h3 className="text-xl font-semibold text-gray-900">
-                Hasdar. L, SE
+                {strukturLoading ? 'Memuat...' : (lurah?.nama || 'Kepala Kelurahan')}
               </h3>
               <p className="text-sm text-blue-600 mb-4">
                 Kepala Kelurahan Baju Bodoa
