@@ -263,16 +263,6 @@ export default function TambahWilayah() {
 								/>
 							</div>
 
-							{/* Info Box */}
-							<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-								<h4 className="font-semibold text-sm text-blue-900 mb-2">💡 Tips Pengisian:</h4>
-								<ul className="text-xs text-blue-800 space-y-1">
-									<li>• Pastikan format RW dan RT konsisten (gunakan 2-3 digit angka)</li>
-									<li>• Nama Lingkungan harus sama untuk semua RT dalam satu wilayah</li>
-									<li>• Ketua RT dapat diupdate sewaktu-waktu jika terjadi pergantian</li>
-								</ul>
-							</div>
-
 							{/* Submit Buttons */}
 							<div className="flex gap-3 pt-4 border-t border-gray-200">
 								<button
@@ -280,7 +270,7 @@ export default function TambahWilayah() {
 									disabled={loading}
 									className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 								>
-									{loading ? 'Menyimpan...' : isEditMode ? 'Update Data' : 'Tambah Data'}
+									{loading ? 'Menyimpan...' : isEditMode ? 'Update Data' : 'Tambah RT'}
 								</button>
 								<button
 									type="button"
