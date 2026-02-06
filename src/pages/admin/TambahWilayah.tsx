@@ -270,7 +270,7 @@ export default function TambahWilayah() {
 									disabled={loading}
 									className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 								>
-									{loading ? 'Menyimpan...' : isEditMode ? 'Update Data' : 'Tambah RT'}
+									{loading ? 'Menyimpan...' : isEditMode ? 'Simpan Perubahan' : 'Tambah RT'}
 								</button>
 								<button
 									type="button"

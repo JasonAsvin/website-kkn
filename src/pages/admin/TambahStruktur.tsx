@@ -335,7 +335,7 @@ export default function TambahStruktur() {
 									disabled={loading || uploadingFoto}
 									className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 								>
-									{loading || uploadingFoto ? 'Menyimpan...' : isEditMode ? 'Update Pegawai' : 'Tambah Pegawai'}
+									{loading || uploadingFoto ? 'Menyimpan...' : isEditMode ? 'Simpan Perubahan' : 'Tambah Pegawai'}
 								</button>
 								<button
 									type="button"
