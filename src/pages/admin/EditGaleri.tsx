@@ -276,7 +276,7 @@ export default function EditGaleri() {
                 disabled={uploading || loading}
                 className="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 font-semibold"
               >
-                {uploading ? 'Menyimpan...' : '💾 Simpan Perubahan'}
+                {uploading ? 'Menyimpan...' : 'Simpan Perubahan'}
               </button>
               <button
                 onClick={() => navigate('/admin/manajemen-galeri')}

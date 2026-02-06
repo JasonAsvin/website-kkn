@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import AdminSidebar from '../../components/layout/AdminSidebar';
 import { supabase } from '../../services/supabase';
 
-export default function TambahFasilitas() {
+export default function EditFasilitas() {
 	const navigate = useNavigate();
+	const { id } = useParams<{ id: string }>();
+
 	const [activeNav, setActiveNav] = useState('fasilitas');
 	const [namaFasilitas, setNamaFasilitas] = useState('');
 	const [alamat, setAlamat] = useState('');
@@ -12,10 +14,52 @@ export default function TambahFasilitas() {
 	const [kategori, setKategori] = useState('Sekolah');
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
+	const [saving, setSaving] = useState(false);
+
+	useEffect(() => {
+		if (id) {
+			loadFasilitas(id);
+		}
+	}, [id]);
+
+	const loadFasilitas = async (fasilitasId: string) => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			if (!supabase) {
+				throw new Error('Supabase client not configured');
+			}
+
+			const { data, error: fetchError } = await supabase
+				.from('fasilitas_umum')
+				.select('id, nama_fasilitas, alamat, lingkungan, kategori')
+				.eq('id', fasilitasId)
+				.single();
+
+			if (fetchError) throw fetchError;
+			if (!data) throw new Error('Data fasilitas tidak ditemukan');
+
+			setNamaFasilitas(data.nama_fasilitas || '');
+			setAlamat(data.alamat || '');
+			setLingkungan(data.lingkungan || '');
+			setKategori(data.kategori || 'Sekolah');
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Gagal memuat data fasilitas';
+			setError(message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
+
+		if (!id) {
+			setError('ID fasilitas tidak valid');
+			return;
+		}
 
 		if (!namaFasilitas.trim()) {
 			setError('Nama fasilitas harus diisi');
@@ -32,29 +76,32 @@ export default function TambahFasilitas() {
 			return;
 		}
 
-		setLoading(true);
+		setSaving(true);
 
 		try {
 			if (!supabase) {
 				throw new Error('Supabase client not configured');
 			}
 
-			const { error: insertError } = await supabase.from('fasilitas_umum').insert({
-				nama_fasilitas: namaFasilitas,
-				alamat: alamat,
-				lingkungan: lingkungan,
-				kategori: kategori,
-			});
+			const { error: updateError } = await supabase
+				.from('fasilitas_umum')
+				.update({
+					nama_fasilitas: namaFasilitas,
+					alamat: alamat,
+					lingkungan: lingkungan,
+					kategori: kategori,
+				})
+				.eq('id', id);
 
-			if (insertError) throw insertError;
+			if (updateError) throw updateError;
 
-			alert('Fasilitas berhasil ditambahkan');
+			alert('Fasilitas berhasil diperbarui');
 			navigate('/admin/manajemen-fasilitas');
 		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Gagal menambah fasilitas';
+			const message = err instanceof Error ? err.message : 'Gagal memperbarui fasilitas';
 			setError(message);
 		} finally {
-			setLoading(false);
+			setSaving(false);
 		}
 	};
 
@@ -80,8 +127,8 @@ export default function TambahFasilitas() {
 					{/* Content */}
 					<main className="p-6 space-y-6">
 						<div>
-							<h2 className="text-2xl font-bold">Tambah Fasilitas Baru</h2>
-							<p className="text-sm text-gray-500">Tambahkan data fasilitas baru ke database</p>
+							<h2 className="text-2xl font-bold">Edit Fasilitas</h2>
+							<p className="text-sm text-gray-500">Perbarui data fasilitas yang sudah ada</p>
 						</div>
 
 						{error && (
@@ -101,6 +148,7 @@ export default function TambahFasilitas() {
 									value={namaFasilitas}
 									onChange={(e) => setNamaFasilitas(e.target.value)}
 									placeholder="Masukkan nama fasilitas..."
+									disabled={loading || saving}
 									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 								/>
 							</div>
@@ -114,6 +162,7 @@ export default function TambahFasilitas() {
 									onChange={(e) => setAlamat(e.target.value)}
 									placeholder="Masukkan alamat fasilitas..."
 									rows={3}
+									disabled={loading || saving}
 									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 								/>
 							</div>
@@ -127,6 +176,7 @@ export default function TambahFasilitas() {
 									value={lingkungan}
 									onChange={(e) => setLingkungan(e.target.value)}
 									placeholder="Masukkan lingkungan..."
+									disabled={loading || saving}
 									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 								/>
 							</div>
@@ -138,6 +188,7 @@ export default function TambahFasilitas() {
 								<select
 									value={kategori}
 									onChange={(e) => setKategori(e.target.value)}
+									disabled={loading || saving}
 									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 								>
 									<option value="Sekolah">Sekolah</option>
@@ -151,10 +202,10 @@ export default function TambahFasilitas() {
 							<div className="flex gap-3 pt-4">
 								<button
 									type="submit"
-									disabled={loading}
+									disabled={loading || saving}
 									className="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 font-semibold transition"
 								>
-									{loading ? 'Menyimpan...' : 'Tambah Fasilitas'}
+									{saving ? 'Menyimpan...' : 'Simpan Perubahan'}
 								</button>
 								<button
 									type="button"

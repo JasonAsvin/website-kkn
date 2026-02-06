@@ -227,7 +227,7 @@ export default function TambahGaleri() {
 								disabled={uploading}
 								className="flex-1 px-4 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-50 font-semibold"
 							>
-								{uploading ? 'Mengunggah...' : '⬆ Upload Foto'}
+								{uploading ? 'Mengunggah...' : 'Upload Foto'}
 							</button>
 							<button
 								onClick={() => navigate('/admin/manajemen-galeri')}

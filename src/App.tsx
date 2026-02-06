@@ -15,6 +15,7 @@ import TambahGaleri from './pages/admin/TambahGaleri';
 import EditGaleri from './pages/admin/EditGaleri';
 import ManajemenFasilitas from './pages/admin/ManajemenFasilitas';
 import TambahFasilitas from './pages/admin/TambahFasilitas';
+import EditFasilitas from './pages/admin/EditFasilitas';
 import ManajemenStruktur from './pages/admin/ManajemenStruktur';
 import TambahStruktur from './pages/admin/TambahStruktur';
 import ManajemenWilayah from './pages/admin/ManajemenWilayah';
@@ -78,6 +79,10 @@ function App() {
         <Route 
           path="/admin/tambah-fasilitas" 
           element={<ProtectedRoute><TambahFasilitas /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/admin/edit-fasilitas/:id" 
+          element={<ProtectedRoute><EditFasilitas /></ProtectedRoute>} 
         />
 
         {/* Manajemen Wilayah Administratif */}
